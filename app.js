@@ -1,16 +1,22 @@
-const createError = require('http-errors');
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const engine = require('ejs-mate');
+const expressSession = require("express-session");
+const { connect } = require('./models/connection');
+const User = require('./models/user');
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
 
-// view engine setup
+app.use(connect);
+
 app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -21,23 +27,37 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(expressSession({
+  secret: process.env.EXPRESS_SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days,
+    secure: false,
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use(function(req, res, next) {
+  res.locals.errorMsg = req.session.errorMsg || '';
+  delete req.session.errorMsg;
+  res.locals.successMsg = req.session.successMsg || '';
+
+  res.locals.currentUser = req.user || null;
+  
+  next();
+});
+
+// ================= ROUTES =================
 app.use('/user', usersRouter);
 app.use('/', indexRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+// ================= ERROR HANDLERS =================
+app.use((req, res, next) => res.render('error/index'));
 
 module.exports = app;
