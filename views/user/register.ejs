@@ -1,2 +1,44 @@
 <% layout('layouts/boilerplate') -%>
 <h1>This is REGISTER PAGE</h1>
+
+<div>
+    <% if (errorMsg) { %>
+        <h1><%= errorMsg %></h1>
+    <% } %>
+</div>
+
+<form action="/user/register" method="POST" enctype="multipart/form-data">
+    <div>
+        <label>
+            Username:
+            <input type="text" name="username" placeholder="Username" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Email:
+            <input type="text" name="email" placeholder="Email" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Password:
+            <input type="password" name="password" placeholder="Password" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Confirm Password:
+            <input type="password" name="confirmPassword" placeholder="Confirm Password" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Profile Image:
+            <input type="file" name="image" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Register</button>
+    </div>
+</form>

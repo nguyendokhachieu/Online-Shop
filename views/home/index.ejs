@@ -1,2 +1,16 @@
 <% layout('layouts/boilerplate') -%>
 <h1>This is HOME PAGE</h1>
+<h2>
+    <% if (currentUser) { %>
+        <%= currentUser %>
+    <% } %>
+</h2>
+
+<div>
+    <% if (successMsg) { %>
+        <h1><%= successMsg %></h1>
+    <% } %>
+    <% if (errorMsg) { %>
+        <h1><%= errorMsg %></h1>
+    <% } %>
+</div>
