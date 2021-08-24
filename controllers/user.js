@@ -156,5 +156,114 @@ module.exports = {
 
     getForgotPassword(req, res, next) {
         res.render('user/forgotPassword');
+    },
+
+    async putForgotPassword(req, res, next) {
+        try {
+            if (req.body.email.trim().length < 6) {
+                req.session.errorMsg = 'Invalid email address, please try again!';
+                return res.redirect('/user/forgot_password');
+            }
+            
+            const user = await User.findOne({
+                email: req.body.email
+            });
+
+            if (!user) {
+                req.session.errorMsg = 'We cannot find your account! Make sure this is your email, please try again!';
+                return res.redirect('/user/forgot_password');
+            }
+
+            const resetToken1 = crypto.randomBytes(20).toString('hex');
+            const resetToken2 = crypto.randomBytes(20).toString('hex');
+
+            const linkToReset = `${req.headers.host}/user/reset_password/${resetToken1}?_cross=0&_met=1&bznai=${resetToken2}`;
+
+            user.resetPasswordToken = resetToken1;
+            user.resetPasswordExpires = Date.now() + (10*60*1000); // 10 minutes
+            await user.save();
+
+            const msg = {
+                to: req.body.email,
+                from: 'ngdokhachieu@gmail.com', // Use the email address or domain you verified above
+                subject: 'Online Shop - Password Recovery',
+                text: `Please click the following link to recover your password.`,
+                html: `<a href="${linkToReset}">${linkToReset}</a>`,
+            };
+
+            await sgMail.send(msg);     
+            
+            req.session.successMsg = 'An email has been sent to you. Please open your mailbox (make sure to check spams, too) and follow further instructions!';
+            return res.redirect('/user/forgot_password');
+        } catch (error) {
+            req.session.errorMsg = 'We cannot find your account! Make sure this is your email, please try again!';
+            return res.redirect('/user/forgot_password');
+        }
+    },
+
+    async getResetPassword(req, res, next) {
+        try {
+            console.log('req.params.reset_password_token', req.params.reset_password_token);
+            const user = await User.findOne({
+                resetPasswordToken: req.params.reset_password_token,
+                resetPasswordExpires: { $gt: Date.now() },
+            });
+
+            if (!user) {
+                req.session.errorMsg = 'We cannot find your account or your link has expired!';
+                return res.redirect('/user/forgot_password');
+            }
+
+            req.session.successMsg = 'Please type your new password!';
+            return res.render('user/passwordRecovery', { reset_password_token: req.params.reset_password_token });
+        } catch (error) {
+            req.session.errorMsg = 'We cannot find your account or your link has expired!';
+            return res.redirect('/user/forgot_password');
+        }
+    },
+
+    async putPasswordRecovery(req, res, next) {
+        try {
+            const user = await User.findOne({
+                resetPasswordToken: req.params.reset_password_token,
+                resetPasswordExpires: { $gt: Date.now() },
+            });
+
+            if (!user) {
+                req.session.errorMsg = 'TryWe cannot find your account or your link has expired!';
+                return res.redirect('/user/forgot_password');
+            }
+
+            user.resetPasswordToken = null;
+            user.resetPasswordExpires = null;
+            await user.save();
+
+            if (req.body.password !== req.body.confirmPassword) {
+                req.session.errorMsg = 'Password mismatched! Please try again!';
+                return res.redirect('/user/forgot_password');
+            }
+
+            if (req.body.password.trim().length < 8) {
+                req.session.errorMsg = 'Password has at least 8 characters, excludes any white spaces!';
+                return res.redirect('/user/forgot_password');
+            }
+
+            await user.setPassword(req.body.password);
+            await user.save();
+
+            req.login(user, function(err) {
+                if (err) {
+                    req.session.errorMsg = 'Some unexpected errors happened while we logged you in! Please try to login again!';
+                    return res.redirect('/user/login');
+                }
+
+                req.session.successMsg = 'Password changed successfully!';
+                return res.redirect('/');
+            })
+        } catch (error) {
+            req.session.errorMsg = 'CatchWe cannot find your account or your link has expired!';
+            return res.redirect('/user/forgot_password');
+        }
     }
+
 }

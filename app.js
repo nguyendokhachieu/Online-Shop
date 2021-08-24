@@ -9,6 +9,7 @@ const { connect } = require('./models/connection');
 const User = require('./models/user');
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const methodOverride = require('method-override')
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -16,6 +17,7 @@ const usersRouter = require('./routes/users');
 const app = express();
 
 app.use(connect);
+app.use(methodOverride('_method'));
 
 app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));

@@ -20,7 +20,9 @@ const UserSchema = new Schema({
         default: 0,
     },
     verificationToken: String,
-    verificationExpires: Date
+    verificationExpires: Date,
+    resetPasswordToken: String, 
+    resetPasswordExpires: Date,
 });
 
 UserSchema.plugin(passportLocalMongoose);
