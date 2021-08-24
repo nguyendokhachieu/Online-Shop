@@ -7,26 +7,24 @@ const {
   getRegister,
   postRegister,
   getUserVerification,
-  getVerificationCheckUp,
   postLogin,
   getForgotPassword,
   putForgotPassword,
   getResetPassword,
   putPasswordRecovery,
+  getLogout,
 } = require('../controllers/user');
-
-// VIẾT MIDDLEWARE CHECK LOGGEDIN
 // GIỮ LẠI GIÁ TRỊ CHO CÁC Ô INPUT
-// LOGOUT
 
 router.get('/login', getLogin);
 router.post('/login', upload.none(), postLogin);
+
+router.get('/logout', getLogout);
 
 router.get('/register', getRegister);
 router.post('/register', upload.single('image'), postRegister);
 
 router.get('/verification/:user_id/:verification_token', getUserVerification);
-router.get('/verification_checkup', getVerificationCheckUp);
 
 router.get('/forgot_password', getForgotPassword);
 router.put('/forgot_password', upload.none(), putForgotPassword);

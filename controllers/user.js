@@ -4,15 +4,19 @@ const User = require('../models/user');
 
 module.exports = {
     getLogin(req, res, next) {
+        if (req.isAuthenticated()) return res.redirect('/');
         res.render('user/login');
     },
 
-    getRegister(req, res, next) {
-        res.render('user/register');
+    getLogout(req, res, next) {
+        req.logout();
+        req.session.successMsg = 'Logout successfully!';
+        res.redirect("/");
     },
 
-    getVerificationCheckUp(req, res, next) {
-        res.render('user/registerSuccessAndMail');
+    getRegister(req, res, next) {
+        if (req.isAuthenticated()) return res.redirect('/');
+        res.render('user/register');
     },
 
     async postRegister(req, res, next) {
@@ -71,7 +75,7 @@ module.exports = {
             await sgMail.send(msg);
 
             req.session.successMsg = `An email has been sent to ${req.body.email}. Please open your mailbox (make sure to check spams, too) and follow further instructions!`;
-            return res.redirect('/user/verification_checkup');
+            return res.render('user/registerSuccessAndMail');
         } catch (error) {
             let errorMessage = error.message;
             if (errorMessage.includes('duplicate')) {
@@ -91,7 +95,7 @@ module.exports = {
             });
 
             if (!user) {
-                req.session.errorMsg = 'We cannot find user. Make sure you clicked the link we sent';
+                req.session.errorMsg = 'Sorry, we cannot find user!';
                 return res.redirect('/user/register');
             }
 
@@ -104,7 +108,7 @@ module.exports = {
             return res.redirect('/user/login');
             
         } catch (error) {
-            req.session.errorMsg = 'We cannot find user. Make sure you clicked the link we sent';
+            req.session.errorMsg = 'Sorry, we cannot find user!';
             return res.redirect('/user/register');
         }
     },
@@ -155,6 +159,7 @@ module.exports = {
     },
 
     getForgotPassword(req, res, next) {
+        if (req.isAuthenticated()) return res.redirect('/');
         res.render('user/forgotPassword');
     },
 
@@ -203,7 +208,7 @@ module.exports = {
 
     async getResetPassword(req, res, next) {
         try {
-            console.log('req.params.reset_password_token', req.params.reset_password_token);
+            if (req.isAuthenticated()) return res.redirect('/');
             const user = await User.findOne({
                 resetPasswordToken: req.params.reset_password_token,
                 resetPasswordExpires: { $gt: Date.now() },
