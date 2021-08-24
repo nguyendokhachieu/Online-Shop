@@ -13,6 +13,7 @@ const methodOverride = require('method-override')
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const productsRouter = require('./routes/products');
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use(function(req, res, next) {
 });
 
 // ================= ROUTES =================
+app.use('/products', productsRouter);
 app.use('/user', usersRouter);
 app.use('/', indexRouter);
 

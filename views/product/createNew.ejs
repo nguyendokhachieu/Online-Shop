@@ -1,0 +1,130 @@
+<% layout('layouts/boilerplate') -%>
+<h1>This is CREATE NEW PRODUCT PAGE</h1>
+
+<div>
+    <% if (errorMsg) { %>
+        <h1><%= errorMsg %></h1>
+    <% } %>
+    <% if (successMsg) { %>
+        <h1><%= successMsg %></h1>
+    <% } %>
+</div>
+
+<form action="/products/create_new" method="POST" enctype="multipart/form-data">
+    <div>
+        <label>
+            Title:
+            <input type="text" name="title" placeholder="Title" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Price:
+            <input type="number" name="price" min="0" step="1000" placeholder="Price in VND" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Description:
+            <textarea name="description" placeholder="Product description"></textarea>
+        </label>
+    </div>
+    <div>
+        <label>
+            Tỉnh/thành phố:
+            <select name="province">
+                <option data-uid="0" value="0">Chọn tỉnh / thành phố</option>
+            </select>
+        </label>
+    </div>
+    <div>
+        <label>
+            Quận/huyện:
+            <select name="district">
+                <option data-uid="0" value="0">Chọn quận / huyện / thị xã</option>
+            </select>
+        </label>
+    </div>
+    <div>
+        <label>
+            Xã/phường:
+            <select name="ward">
+                <option data-uid="0" value="0">Chọn xã / phường / thị trấn</option>
+            </select>
+        </label>
+    </div>    
+    <div>
+        <label>
+            Hình ảnh (tối đa 4 hình ảnh):
+            <input type="file" name="images" multiple />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Register</button>
+    </div>
+</form>
+
+<script>
+    const provinceSelect = document.querySelector('select[name="province"]');
+    const districtSelect = document.querySelector('select[name="district"]');
+    const wardSelect = document.querySelector('select[name="ward"]');
+
+    $.ajax({
+        method: 'GET',
+        url: 'https://ndkhieu.xyz/provinces_api/v1/get_province',
+        success: function(data) {
+            if (data.data.length) {
+                for (const province of data.data) {
+                    let provinceOption = document.createElement('option');
+                    provinceOption.value = `${province.province_id}-${province.province_name}`;
+                    provinceOption.textContent = province.province_name;
+
+                    provinceSelect.appendChild(provinceOption);
+                }
+            }
+        }
+    })
+
+    provinceSelect.addEventListener('change', function(e) {
+        console.log(Number(e.target.value.split('-')[0]));
+        if (Number(e.target.value.split('-')[0])) {
+            districtSelect.innerHTML = `<option data-uid="0" value="0">Chọn quận / huyện / thị xã</option>`;
+            $.ajax({
+                method: 'GET',
+                url: `https://ndkhieu.xyz/provinces_api/v1/get_district?province_id=${e.target.value.split('-')[0]}`,
+                success: function(data) {
+                    if (data.data.length) {
+                        for (const district of data.data) {
+                            let districtOption = document.createElement('option');
+                            districtOption.value = `${district.district_id}-${district.district_name}`;
+                            districtOption.textContent = district.district_name;
+
+                            districtSelect.appendChild(districtOption);
+                        }
+                    }
+                }
+            })
+        }
+    })
+
+    districtSelect.addEventListener('change', function(e) {
+        if (Number(e.target.value.split('-')[0])) {
+            wardSelect.innerHTML = `<option data-uid="0" value="0">Chọn xã / phường / thị trấn</option>`;
+            $.ajax({
+                method: 'GET',
+                url: `https://ndkhieu.xyz/provinces_api/v1/get_ward?district_id=${e.target.value.split('-')[0]}`,
+                success: function(data) {
+                    if (data.data.length) {
+                        for (const ward of data.data) {
+                            let wardOption = document.createElement('option');
+                            wardOption.value = `${ward.ward_id}-${ward.ward_name}`;
+                            wardOption.textContent = ward.ward_name;
+
+                            wardSelect.appendChild(wardOption);
+                        }
+                    }
+                }
+            })
+        }
+    })
+</script>
