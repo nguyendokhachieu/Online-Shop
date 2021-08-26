@@ -1,8 +1,8 @@
 <ul id="navbar">
     <li><a href="/">Home</a></li>
-    <li><a href="/posts">Posts List</a></li>
+    <li><a href="/products">Products List</a></li>
     <% if (currentUser) { %>
-        <li><a href="/posts/new">Create a new post</a></li>
+        <li><a href="/products/create_new">Create new</a></li>
         <li><a href="/profile">Your profile</a></li>
         <li><a href="/user/logout">Logout</a></li>
         <li>Welcome, <%= currentUser.username %></li>

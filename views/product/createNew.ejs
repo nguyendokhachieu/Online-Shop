@@ -10,7 +10,7 @@
     <% } %>
 </div>
 
-<form action="/products/create_new" method="POST" enctype="multipart/form-data">
+<form action="/products/create_new" method="POST" enctype="multipart/form-data" name="createNew">
     <div>
         <label>
             Title:
@@ -20,13 +20,14 @@
     <div>
         <label>
             Price:
-            <input type="number" name="price" min="0" step="1000" placeholder="Price in VND" />
+            <input type="number" name="price" min="0" step="1000" value="0" placeholder="Price in VND" />
         </label>
     </div>
     <div>
         <label>
             Description:
-            <textarea name="description" placeholder="Product description"></textarea>
+            <textarea name="description" hidden></textarea>
+            <div id="editor"></div>
         </label>
     </div>
     <div>
@@ -40,6 +41,7 @@
     <div>
         <label>
             Quận/huyện:
+            <span id="districtLoading"></span>
             <select name="district">
                 <option data-uid="0" value="0">Chọn quận / huyện / thị xã</option>
             </select>
@@ -48,6 +50,7 @@
     <div>
         <label>
             Xã/phường:
+            <span id="wardLoading"></span>
             <select name="ward">
                 <option data-uid="0" value="0">Chọn xã / phường / thị trấn</option>
             </select>
@@ -56,18 +59,49 @@
     <div>
         <label>
             Hình ảnh (tối đa 4 hình ảnh):
-            <input type="file" name="images" multiple />
+            <input type="file" name="images" multiple accept="image/*" />
         </label>
     </div>
+    
     <div>
-        <button type="submit">Register</button>
+        <button type="submit">Create new</button>
     </div>
 </form>
+
+<script>
+    const createForm = document.querySelector('form[name="createNew"]');
+        // createForm.addEventListener('submit', e => {
+    //     e.preventDefault();
+    //     const editorData = editor.getData();
+
+    //     console.log(editorData);
+    // });
+</script>
+    
+<script>
+    const description = document.querySelector('textarea[name="description"]');
+    let editor;
+    ClassicEditor
+    .create(document.querySelector( '#editor' ), {
+        removePlugins: [ 'CKFinder', 'CKFinderUploadAdapter', 'EasyImage', 'Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'MediaEmbed' ],   
+    })
+    .then(newEditor => {
+        editor = newEditor;
+        editor.model.document.on('change:data', (evt, data) => {
+            description.innerHTML = editor.getData();
+        });
+    })
+    .catch( error => {
+        console.log( error );
+    });
+</script>
 
 <script>
     const provinceSelect = document.querySelector('select[name="province"]');
     const districtSelect = document.querySelector('select[name="district"]');
     const wardSelect = document.querySelector('select[name="ward"]');
+    const districtLoading = document.querySelector('#districtLoading');
+    const wardLoading = document.querySelector('#wardLoading');
 
     $.ajax({
         method: 'GET',
@@ -89,10 +123,12 @@
         console.log(Number(e.target.value.split('-')[0]));
         if (Number(e.target.value.split('-')[0])) {
             districtSelect.innerHTML = `<option data-uid="0" value="0">Chọn quận / huyện / thị xã</option>`;
+            districtLoading.innerHTML = 'Loading districts';
             $.ajax({
                 method: 'GET',
                 url: `https://ndkhieu.xyz/provinces_api/v1/get_district?province_id=${e.target.value.split('-')[0]}`,
                 success: function(data) {
+                    districtLoading.innerHTML = '';
                     if (data.data.length) {
                         for (const district of data.data) {
                             let districtOption = document.createElement('option');
@@ -110,10 +146,12 @@
     districtSelect.addEventListener('change', function(e) {
         if (Number(e.target.value.split('-')[0])) {
             wardSelect.innerHTML = `<option data-uid="0" value="0">Chọn xã / phường / thị trấn</option>`;
+            wardLoading.innerHTML = 'Loading wards';
             $.ajax({
                 method: 'GET',
                 url: `https://ndkhieu.xyz/provinces_api/v1/get_ward?district_id=${e.target.value.split('-')[0]}`,
                 success: function(data) {
+                    wardLoading.innerHTML = '';
                     if (data.data.length) {
                         for (const ward of data.data) {
                             let wardOption = document.createElement('option');
