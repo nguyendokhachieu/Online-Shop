@@ -10,3 +10,52 @@
     <% } %>
 </div>
 
+<div>Title: <%= product.title %></div>
+<div>Price: <%= product.price %></div>
+<div>Location: <%= product.location.ward %>, <%= product.location.district %>, <%= product.location.province %></div>
+<div>Description: <%- product.description %></div>
+<div>Username: <%= product.seller.username %></div>
+<div>Coordinates: <%= product.geoJSON.geometry.coordinates %></div>
+<div id="map"></div>
+<div id="productImagesSlider" class="carousel slide" data-bs-ride="carousel" style="width:200px">
+    <div class="carousel-inner">
+        <% if (product.images && product.images.length) { %>
+            <% product.images.forEach(function(image, index) { %>
+                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                    <img src="<%= image.secure_url %>" class="d-block w-100" width="200px" height="100px" alt="...">
+                  </div>
+            <% }); %>
+        <% } %>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#productImagesSlider" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#productImagesSlider" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<script>
+    var product =  <%- JSON.stringify(product) %>;
+</script>
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoibmd1eWVuZG9raGFjaGlldSIsImEiOiJja3NkZno4NDcwcWRhMnpvMnNvcjhpN2F4In0.Sj1PbMD37eqqcAER1tic9g';
+    const map = new mapboxgl.Map({
+        container: 'map', 
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: product.geoJSON.geometry.coordinates, // long, lat
+        zoom: 7
+    });
+
+    const el = document.createElement('div').classList.add('marker');
+    // el.className = 'marker';
+
+    new mapboxgl.Marker(el)
+    .setLngLat(product.geoJSON.geometry.coordinates)
+    .setPopup(new mapboxgl.Popup({ offset: 25 }) 
+    .setHTML(`<h3>${product.title}</h3><p>${product.location.ward}, ${product.location.district}, ${product.location.province}</p>`))
+    .addTo(map);
+</script>

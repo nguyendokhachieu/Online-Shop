@@ -98,6 +98,28 @@ module.exports = {
 
     async getShowSingleProduct(req, res, next) {
         try {
+            const product = await Product.findById(req.params.product_id).populate({
+                path: 'seller',
+            });
+
+            if (!product) {
+                req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
+                return res.render('error/index');
+            }
+            
+            res.render('product/showSingle', { product });
+        } catch (error) {
+            req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
+            return res.render('error/index');
+        }
+    },
+
+    getEditSingleProduct(req, res, next) {
+
+    },
+
+    async putEditSingleProduct(req, res, next) {
+        try {
             
         } catch (error) {
             
