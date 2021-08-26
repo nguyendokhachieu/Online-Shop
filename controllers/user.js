@@ -5,7 +5,7 @@ const User = require('../models/user');
 module.exports = {
     getLogin(req, res, next) {
         if (req.isAuthenticated()) return res.redirect('/');
-        res.render('user/login');
+        res.render('user/login', { _continue: req.query._continue || null });
     },
 
     getLogout(req, res, next) {
@@ -149,8 +149,10 @@ module.exports = {
                     return res.redirect('/user/login');
                 }
 
+                const _continue = req.query._continue || null;
+
                 req.session.successMsg = `Welcome, ${user.username}`;
-                return res.redirect('/');
+                return res.redirect(_continue || '/');
             })
         } catch (error) {
             req.session.errorMsg = 'Some unexpected errors appeared when we had tried to log you in! Please login again!';
