@@ -1,7 +1,14 @@
 <% layout('layouts/boilerplate') -%>
 <h1>This is SHOW SOMEONE PROFILE</h1>
 
-<%= user %>
+<div>
+    <% if (errorMsg) { %>
+        <h1><%= errorMsg %></h1>
+    <% } %>
+    <% if (successMsg) { %>
+        <h1><%= successMsg %></h1>
+    <% } %>
+</div>
 
 <div>
     <img src="<%= user.image.secure_url %>" alt="<%= user.username %>'s profile picture" width="50px" height="50px" />
@@ -10,7 +17,100 @@
             <input type="file" name="image" accept="image/*" />
             <input type="submit" value="Change profile picture" />
         </form>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+            Change Password
+        </button>
+          
+          <!-- Modal Change Password -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/user/profile/<%= user.username %>/change_password?_method=PATCH" method="POST" enctype="multipart/form-data">
+                        <div>
+                            <label>
+                                Current Password:
+                                <input type="password" name="currentPassword" placeholder="Current Password" />
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                New Password:
+                                <input type="password" name="newPassword" placeholder="New Password" />
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                Confirm New Password:
+                                <input type="password" name="confirmPassword" placeholder="Confirm New Password" />
+                            </label>
+                        </div>
+                        <div>
+                            <button type="submit">Change Password</button>
+                        </div>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
     <% } %>
+</div>
+
+<div>
+    Username: <%= user.username %>
+</div>
+<div>
+    <% if (currentUser && currentUser.username === user.username) { %>
+        Email: <%= user.email %>
+    <% } %>
+</div>
+
+<h2><%= user.username %>'s products list</h2>
+
+<% productsPaginate.docs.forEach(function(product) { %>
+    <div>
+        Title: <%= product.title %>
+        Price: <%= product.price %>
+        Seller: <%= product.seller.username %>
+        CreatedAt: <%= product.createdAt.getDate() %>/<%= product.createdAt.getMonth() + 1 %>/<%= product.createdAt.getFullYear() %>, <%= product.createdAt.getHours() %>:<%= product.createdAt.getMinutes() %>:<%= product.createdAt.getSeconds() %>
+        <a href="/products/<%= product.id %>">Show details</a>
+    </div>
+    <hr />
+<% }) %>
+
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <% if (productsPaginate.page > 1) { %>
+                <li class="page-item"><a class="page-link" href="/user/profile/<%= user.username %>?page=<%= productsPaginate.page - 1 %>">Previous</a></li>
+            <% } else { %>
+                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+            <% } %>
+
+            <% if (productsPaginate.page > 4) { %>
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            <% } %>
+
+            <% for(let i = productsPaginate.page <= 3 ? 1 : productsPaginate.page - 3 ; i <= (productsPaginate.page + 3 > productsPaginate.totalPages ? productsPaginate.totalPages : productsPaginate.page + 3); i++) { %>
+                <li class="page-item <%- productsPaginate.page === i ? 'active' : '' %>"><a class="page-link" href="/user/profile/<%= user.username %>?page=<%= i %>"><%= i %></a></li>
+            <% } %>
+            
+            <% if (productsPaginate.page <= productsPaginate.totalPages - 4) { %>
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            <% } %>
+
+            <% if (productsPaginate.page < productsPaginate.totalPages) { %>
+                <li class="page-item"><a class="page-link" href="/user/profile/<%= user.username %>?page=<%= productsPaginate.page + 1 %>">Next</a></li>
+            <% } else { %>
+                <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+            <% } %>
+        </ul>
+    </nav>
 </div>
 
 <script>
@@ -23,40 +123,7 @@
             alert('Please choose image!');
         }
     })
-</script>
 
-<form action="/user/register" method="POST" enctype="multipart/form-data">
-    <div>
-        <label>
-            Username:
-            <input type="text" name="username" placeholder="Username" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Email:
-            <input type="text" name="email" placeholder="Email" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Password:
-            <input type="password" name="password" placeholder="Password" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Confirm Password:
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Profile Image:
-            <input type="file" name="image" />
-        </label>
-    </div>
-    <div>
-        <button type="submit">Register</button>
-    </div>
-</form>
+    // VALIDATE PASSWORD FORM BEFORE SUBMIT
+    // REVIEW PRODUCT
+</script>

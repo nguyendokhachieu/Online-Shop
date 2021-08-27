@@ -1,6 +1,7 @@
 const { cloudinary, sgMail, hideEmail } = require('../helpers');
 const crypto = require('crypto');
 const User = require('../models/user');
+const Product = require('../models/product');
 
 module.exports = {
     getLogin(req, res, next) {
@@ -284,7 +285,18 @@ module.exports = {
                 return res.render('error/index');
             }
 
-            return res.render('user/showProfile', { user });
+            const productsPaginate = await Product.paginate({
+                seller: user._id
+            }, {
+                limit: 5,
+                page: req.query.page || 1, 
+                sort: { _id: -1 },
+                populate: {
+                    path: 'seller'
+                }
+            });
+
+            return res.render('user/showProfile', { user, productsPaginate });
         } catch (error) {
             req.session.errorMsg = 'Cannot find user';
             return res.render('error/index');
@@ -325,6 +337,48 @@ module.exports = {
             return res.redirect(`/user/profile/${req.user.username}`);
         } catch (error) {
             req.session.errorMsg = 'Some unexpected errors happened';
+            return res.redirect(`/user/profile/${req.user.username}`);
+        }
+    },
+
+    async patchChangeUserPassword(req, res, next) {
+        try {
+            if (req.body.newPassword !== req.body.confirmPassword) {
+                req.session.errorMsg = 'New Password mismatched';
+                return res.redirect(`/user/profile/${req.user.username}`);
+            }
+
+            if (req.body.newPassword.trim().length < 8) {
+                req.session.errorMsg = 'New Password has at least 8 character!';
+                return res.redirect(`/user/profile/${req.user.username}`);
+            }
+
+            if (req.body.newPassword === req.body.currentPassword) {
+                req.session.errorMsg = 'New Password has to be different from the old one!';
+                return res.redirect(`/user/profile/${req.user.username}`);
+            }
+
+            const { user, error } = await User.authenticate()(req.user.username, req.body.currentPassword);
+
+            if (!user || error) {
+                req.session.errorMsg = 'Some unexpected errors happened! We cannot find your info right now';
+                return res.redirect(`/user/profile/${req.user.username}`);
+            }
+
+            await user.setPassword(req.body.newPassword);
+            await user.save();
+
+            req.login(user, function(err) {
+                if (err) {
+                    req.session.errorMsg = 'Some unexpected errors happened while we logged you in! Please try to login again!';
+                    return res.redirect('/user/login');
+                }
+
+                req.session.successMsg = 'Password changed successfully!';
+                return res.redirect(`/user/profile/${req.user.username}`);
+            })
+        } catch (error) {
+            req.session.errorMsg = 'Some unexpected errors happened!';
             return res.redirect(`/user/profile/${req.user.username}`);
         }
     }

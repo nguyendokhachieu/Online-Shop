@@ -15,6 +15,7 @@ const {
   getLogout,
   getShowUserProfile,
   patchChangeUserProfileImage,
+  patchChangeUserPassword,
 } = require('../controllers/user');
 const {
   isLoggedIn,
@@ -37,6 +38,8 @@ router.put('/forgot_password', upload.none(), putForgotPassword);
 router.get('/reset_password/:reset_password_token', getResetPassword);
 router.put('/password_recovery/:reset_password_token', upload.none(), putPasswordRecovery);
 
+
+router.patch('/profile/:username/change_password', upload.none(), isLoggedIn, isMyself, patchChangeUserPassword);
 router.patch('/profile/:username/profile_image', upload.single('image'), isLoggedIn, isMyself, patchChangeUserProfileImage);
 router.get('/profile/:username', getShowUserProfile);
 
