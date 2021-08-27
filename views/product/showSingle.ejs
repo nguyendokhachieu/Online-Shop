@@ -10,9 +10,16 @@
     <% } %>
 </div>
 
+<div>
+    <% if (currentUser && product.seller.equals(currentUser._id)) { %>
+        <a href="/products/<%= product.id %>/edit">Edit this product</a>
+        <a href="/products/<%= product.id %>/edit">Delete this product</a>
+    <% } %>
+</div>
+
 <div>Title: <%= product.title %></div>
 <div>Price: <%= product.price %></div>
-<div>Location: <%= product.location.ward %>, <%= product.location.district %>, <%= product.location.province %></div>
+<div>Location: <%- product.location.ward.split('-')[1] %>, <%- product.location.district.split('-')[1] %>, <%- product.location.province.split('-')[1] %></div>
 <div>Description: <%- product.description %></div>
 <div>Username: <%= product.seller.username %></div>
 <div>Coordinates: <%= product.geoJSON.geometry.coordinates %></div>

@@ -53,12 +53,12 @@ module.exports = {
             const description = striptags(req.body.description.trim(), [
                 'p', 'h1', 'h2', 'h3', 'h4', 'strong', 'i', 'a', 'ul', 'li', 'ol', 'blockquote', 'figure', 'table', 'tbody', 'tr', 'td'
             ]);
-            const province = req.body.province.split('-')[1];
-            const district = req.body.district.split('-')[1];
-            const ward = req.body.ward.split('-')[1];
+            const province = req.body.province;
+            const district = req.body.district;
+            const ward = req.body.ward;
 
             // validate in client side
-            const geoJSON = await geocoding(`${ward} ${district} ${province}`);
+            const geoJSON = await geocoding(`${ward.split('-')[1]} ${district.split('-')[1]} ${province.split('-')[1]}`);
 
             const product = {
                 title, 
@@ -114,15 +114,125 @@ module.exports = {
         }
     },
 
-    getEditSingleProduct(req, res, next) {
+    async getEditSingleProduct(req, res, next) {
+        try {
+            const product = await Product.findById(req.params.product_id);
 
+            if (!product) {
+                req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
+                return res.render('error/index');
+            }
+
+            return res.render('product/editSingle', { product });
+
+        } catch (error) {
+            req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
+            return res.render('error/index');
+        }
     },
 
     async putEditSingleProduct(req, res, next) {
         try {
+            const product = await Product.findById(req.params.product_id);
+
+            if (!product) {
+                req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
+                return res.render('error/index');
+            }
+
+            if (!req.body.title.trim().length) {
+                req.session.errorMsg = 'Title cannot be an empty string!';
+                return res.redirect(`/products/${req.params.product_id}/edit`);
+            }
             
+            if (isNaN(req.body.price)) {
+                req.session.errorMsg = 'Price must be a number!';
+                return res.redirect(`/products/${req.params.product_id}/edit`);
+            }
+
+            if (Number(req.body.price) < 0) {
+                req.session.errorMsg = 'Price must be greater than or equal to 0!';
+                return res.redirect(`/products/${req.params.product_id}/edit`);
+            }
+
+            if (Number(req.body.province) === 0) {
+                req.session.errorMsg = 'Please choose province!';
+                return res.redirect(`/products/${req.params.product_id}/edit`);
+            }
+
+            if (Number(req.body.district) === 0) {
+                req.session.errorMsg = 'Please choose district!';
+                return res.redirect(`/products/${req.params.product_id}/edit`);
+            }
+
+            if (Number(req.body.ward) === 0) {
+                req.session.errorMsg = 'Please choose ward!';
+                return res.redirect(`/products/${req.params.product_id}/edit`);
+            }
+
+            if (req.files && req.files.length) {
+                for (const file of req.files) {
+                    if (!file.mimetype.startsWith('image')) {
+                        req.session.errorMsg = 'One or multiple files are not in image format!';
+                        return res.redirect(`/products/${req.params.product_id}/edit`);
+                    }
+                }
+            }
+
+            const deletedImagesLength = req.body.deletedImages.length || 0;
+            const newImagesLength = req.files.length || 4;
+            const currentImagesLength = product.images.length;
+
+            if (currentImagesLength - deletedImagesLength + newImagesLength > 4) {
+                req.session.errorMsg = 'Sorry, you can only upload maximum of 4 images per product!';
+                return res.render('error/index');
+            }
+
+            product.title = req.body.title.trim();
+            product.price = Number(req.body.price);
+            product.description = striptags(req.body.description.trim(), [
+                'p', 'h1', 'h2', 'h3', 'h4', 'strong', 'i', 'a', 'ul', 'li', 'ol', 'blockquote', 'figure', 'table', 'tbody', 'tr', 'td'
+            ]);
+
+            if ((product.location.province !== req.body.province) || (product.location.district !== req.body.district) || (product.location.ward !== req.body.ward)) {
+                const geoJSON = await geocoding(`${req.body.ward.split('-')[1]} ${req.body.district.split('-')[1]} ${req.body.province.split('-')[1]}`);
+
+                product.geoJSON = geoJSON;
+                product.location.province = req.body.province;
+                product.location.district = req.body.district;
+                product.location.ward = req.body.ward;
+            }
+
+            if (req.body.deletedImages && req.body.deletedImages.length) {
+                for (const deletePublicId of req.body.deletedImages) {
+                    await cloudinary.uploader.destroy(deletePublicId);
+
+                    for (const img of product.images) {
+                        if (img.public_id === deletePublicId) {
+                            const index = product.images.indexOf(img);
+                            product.images.splice(index, 1);
+                        }
+                    }
+                }
+            }
+
+            if (req.files && req.files.length) {
+                for (const newImg of req.files) {
+                    const newUpload = await cloudinary.uploader.upload(newImg.path);
+
+                    product.images.push({
+                        secure_url: newUpload.secure_url,
+                        public_id: newUpload.public_id,
+                    })
+                }
+            }
+
+            await product.save();
+            req.session.successMsg = 'Edited your product successfully!';
+            return res.redirect(`/products/${product.id}`);
         } catch (error) {
-            
+            req.session.errorMsg = 'Sorry, some unexpected errors happened while we tried to edit your product, please try again!';
+            return res.render('error/index');
         }
     }
 }

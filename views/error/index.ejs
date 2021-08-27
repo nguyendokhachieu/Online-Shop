@@ -1,2 +1,11 @@
 <% layout('layouts/boilerplate') -%>
 <h1>This is ERROR PAGE</h1>
+
+<div>
+    <% if (errorMsg) { %>
+        <h1><%= errorMsg %></h1>
+    <% } %>
+    <% if (successMsg) { %>
+        <h1><%= successMsg %></h1>
+    <% } %>
+</div>
