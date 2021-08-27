@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 
 module.exports = {
     isLoggedIn(req, res, next) {
@@ -25,6 +26,29 @@ module.exports = {
             return next();
         } catch (error) {
             req.session.errorMsg = 'Not found';
+            return res.render('error/index');
+        }
+    },
+
+    async isMyself(req, res, next) {
+        try {
+            const user = await User.findOne({
+                username: req.params.username
+            });
+
+            if (!user) {
+                req.session.errorMsg = 'Cannot find current user';
+                return res.render('error/index');
+            }
+
+            if (!user.equals(req.user._id)) {
+                req.session.errorMsg = 'Access denied!';
+                return res.render('error/index');
+            }
+
+            return next();
+        } catch (error) {
+            req.session.errorMsg = 'Cannot find current user';
             return res.render('error/index');
         }
     }

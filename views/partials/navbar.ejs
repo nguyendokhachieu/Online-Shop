@@ -3,7 +3,7 @@
     <li><a href="/products">Products List</a></li>
     <% if (currentUser) { %>
         <li><a href="/products/create_new">Create new</a></li>
-        <li><a href="/profile">Your profile</a></li>
+        <li><a href="/user/profile/<%= currentUser.username %>">Your profile</a></li>
         <li><a href="/user/logout">Logout</a></li>
         <li>Welcome, <%= currentUser.username %></li>
     <% } else { %>

@@ -1,0 +1,62 @@
+<% layout('layouts/boilerplate') -%>
+<h1>This is SHOW SOMEONE PROFILE</h1>
+
+<%= user %>
+
+<div>
+    <img src="<%= user.image.secure_url %>" alt="<%= user.username %>'s profile picture" width="50px" height="50px" />
+    <% if (currentUser && currentUser.username === user.username) { %>
+        <form action="/user/profile/<%= user.username %>/profile_image?_method=PATCH" name="formProfileImage" method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" />
+            <input type="submit" value="Change profile picture" />
+        </form>
+    <% } %>
+</div>
+
+<script>
+    const formProfileImage = document.querySelector('form[name="formProfileImage"]');
+    const inputProfileImage = document.querySelector('input[name="image"]');
+
+    formProfileImage.addEventListener('submit', e => {
+        if (inputProfileImage.files.length === 0) {
+            e.preventDefault();
+            alert('Please choose image!');
+        }
+    })
+</script>
+
+<form action="/user/register" method="POST" enctype="multipart/form-data">
+    <div>
+        <label>
+            Username:
+            <input type="text" name="username" placeholder="Username" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Email:
+            <input type="text" name="email" placeholder="Email" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Password:
+            <input type="password" name="password" placeholder="Password" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Confirm Password:
+            <input type="password" name="confirmPassword" placeholder="Confirm Password" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Profile Image:
+            <input type="file" name="image" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Register</button>
+    </div>
+</form>

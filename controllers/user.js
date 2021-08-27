@@ -271,6 +271,62 @@ module.exports = {
             req.session.errorMsg = 'CatchWe cannot find your account or your link has expired!';
             return res.redirect('/user/forgot_password');
         }
+    },
+
+    async getShowUserProfile(req, res, next) {
+        try {
+            const user = await User.findOne({
+                username: req.params.username
+            });
+
+            if (!user) {
+                req.session.errorMsg = 'Cannot find user';
+                return res.render('error/index');
+            }
+
+            return res.render('user/showProfile', { user });
+        } catch (error) {
+            req.session.errorMsg = 'Cannot find user';
+            return res.render('error/index');
+        }
+    },
+
+    async patchChangeUserProfileImage(req, res, next) {
+        try {
+            if (req.file) {
+                if (!req.file.mimetype.startsWith('image')) {
+                    req.session.errorMsg = 'One or multiple files are not in image format!';
+                    return res.redirect(`/user/profile/${req.user.username}`);
+                }
+
+                const user = await User.findById(req.user._id);
+
+                if (!user) {
+                    req.session.errorMsg = 'Cannot find user!';
+                    return res.redirect(`/user/profile/${req.user.username}`);
+                }
+
+                if (!user.image.secure_url.includes('/images/default-avatar.png')) {
+                    await cloudinary.uploader.destroy(user.image.public_id);
+                }
+
+                const uploaded = await cloudinary.uploader.upload(req.file.path);
+
+                user.image.secure_url = uploaded.secure_url;
+                user.image.public_id = uploaded.public_id;
+
+                await user.save();
+
+                req.session.successMsg = 'Updated your profile image!';
+                return res.redirect(`/user/profile/${req.user.username}`);
+            }
+
+            req.session.errorMsg = 'Please choose your profile image!';
+            return res.redirect(`/user/profile/${req.user.username}`);
+        } catch (error) {
+            req.session.errorMsg = 'Some unexpected errors happened';
+            return res.redirect(`/user/profile/${req.user.username}`);
+        }
     }
 
 }
