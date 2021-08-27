@@ -9,6 +9,7 @@ const {
     getEditSingleProduct,
     putEditSingleProduct,
     deleteSingleProduct,
+    getShowProductsPaginate,
 } = require('../controllers/product');
 const { 
     isLoggedIn,
@@ -24,5 +25,7 @@ router.put('/:product_id/edit', upload.array('images', 4), isLoggedIn, isProduct
 router.delete('/:product_id/delete', isLoggedIn, isProductSeller, deleteSingleProduct);
 
 router.get('/:product_id', getShowSingleProduct);
+
+router.get('/', getShowProductsPaginate);
 
 module.exports = router;

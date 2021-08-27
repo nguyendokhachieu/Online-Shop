@@ -259,5 +259,34 @@ module.exports = {
             req.session.errorMsg = 'Error finding your product!';
             return res.render('error/index');
         }
+    },
+
+    async getShowProductsPaginate(req, res, next) {
+        try {
+            const productsPaginate = await Product.paginate({}, {
+                sort: { _id: -1 },
+                limit: 5,
+                page: req.query.page || 1,
+                populate: {
+                    path: 'seller'
+                }
+            });
+
+            // productsPaginate.docs
+            // productsPaginate.totalDocs = 100
+            // productsPaginate.limit = 10
+            // productsPaginate.page = 1
+            // productsPaginate.totalPages = 10
+            // productsPaginate.hasNextPage = true
+            // productsPaginate.nextPage = 2
+            // productsPaginate.hasPrevPage = false
+            // productsPaginate.prevPage = null
+            // productsPaginate.pagingCounter = 1
+
+            res.render('product/showProductsPaginate', { productsPaginate });
+        } catch (error) {
+            req.session.errorMsg = 'Error finding products';
+            return res.render('error/index');
+        }
     }
 }

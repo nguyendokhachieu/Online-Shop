@@ -50,6 +50,7 @@ app.use(function(req, res, next) {
   res.locals.errorMsg = req.session.errorMsg || '';
   delete req.session.errorMsg;
   res.locals.successMsg = req.session.successMsg || '';
+  delete req.session.successMsg;
 
   res.locals.currentUser = req.user || null;
   
