@@ -13,7 +13,26 @@
 <div>
     <% if (currentUser && product.seller.equals(currentUser._id)) { %>
         <a href="/products/<%= product.id %>/edit">Edit this product</a>
-        <a href="/products/<%= product.id %>/edit">Delete this product</a>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteProductConfirmationModal">
+            Delete this product
+        </button>
+        <div class="modal fade" id="deleteProductConfirmationModal" tabindex="-1" aria-labelledby="deleteProductConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteProductConfirmationModalLabel">Delete Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">Permanently delete this product?</div>
+                    <div class="modal-footer">
+                        <form action="/products/<%= product.id %>/delete?_method=DELETE" method="POST">
+                            <button type="submit" class="btn btn-primary">Delete</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     <% } %>
 </div>
 

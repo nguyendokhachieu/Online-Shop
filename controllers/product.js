@@ -234,5 +234,30 @@ module.exports = {
             req.session.errorMsg = 'Sorry, some unexpected errors happened while we tried to edit your product, please try again!';
             return res.render('error/index');
         }
+    },
+
+    async deleteSingleProduct(req, res, next) {
+        try {
+            const product = await Product.findById(req.params.product_id);
+
+            if (!product) {
+                req.session.errorMsg = 'Error finding your product!';
+                return res.render('error/index');
+            }
+
+            if (product.images && product.images.length) {
+                for (const img of product.images) {
+                    await cloudinary.uploader.destroy(img.public_id);
+                }
+            }
+
+            await Product.findByIdAndRemove(product.id);
+
+            req.session.successMsg = 'Successfully deleted your product!';
+            return res.redirect('/products');
+        } catch (error) {
+            req.session.errorMsg = 'Error finding your product!';
+            return res.render('error/index');
+        }
     }
 }
