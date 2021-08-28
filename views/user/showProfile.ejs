@@ -31,7 +31,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/user/profile/<%= user.username %>/change_password?_method=PATCH" method="POST" enctype="multipart/form-data">
+                    <form action="/user/profile/<%= user.username %>/change_password?_method=PATCH" name="formChangePassword" method="POST" enctype="multipart/form-data">
                         <div>
                             <label>
                                 Current Password:
@@ -117,6 +117,11 @@
     const formProfileImage = document.querySelector('form[name="formProfileImage"]');
     const inputProfileImage = document.querySelector('input[name="image"]');
 
+    const formChangePassword = document.querySelector('form[name="formChangePassword"]');
+    const inputCurrentPassword = document.querySelector('input[name="currentPassword"]');
+    const inputNewPassword = document.querySelector('input[name="newPassword"]');
+    const inputConfirmPassword = document.querySelector('input[name="confirmPassword"]');
+
     formProfileImage.addEventListener('submit', e => {
         if (inputProfileImage.files.length === 0) {
             e.preventDefault();
@@ -124,6 +129,25 @@
         }
     })
 
-    // VALIDATE PASSWORD FORM BEFORE SUBMIT
+    formChangePassword.addEventListener('submit', e => {
+        if (!inputCurrentPassword.value.trim() || inputCurrentPassword.value.length < 8) {
+            e.preventDefault();
+            alert('Current password has at least 8 characters');
+        }
+        else if (!inputNewPassword.value.trim() || inputNewPassword.value.length < 8) {
+            e.preventDefault();
+            alert('New password has at least 8 characters');
+        }
+        else if (!inputConfirmPassword.value.trim() || inputConfirmPassword.value.length < 8) {
+            e.preventDefault();
+            alert('Password confirmation has at least 8 characters');
+        } 
+
+        if (inputNewPassword.value !== inputConfirmPassword.value) {
+            e.preventDefault();
+            alert('New password and password confirmation mismatched!');
+        }
+    })
+
     // REVIEW PRODUCT
 </script>
