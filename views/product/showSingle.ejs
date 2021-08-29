@@ -63,9 +63,348 @@
     </button>
 </div>
 
+// SEARCH
+
+<div class="reviews-list">
+    <% if (reviewsPaginate.docs && reviewsPaginate.docs.length) { %>
+        <% reviewsPaginate.docs.forEach(function(review) { %>
+            <div data-id="<%= currentUser && review.creator.equals(currentUser._id) && review.id %>">
+                <h5><%= review.creator.username %>: <%= review.body %></h5>
+                <h6><%= review.rating %> stars</h6>
+                <% if (currentUser && review.creator.equals(currentUser._id)) { %>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#review<%= review.id %>">
+                        Delete this review?
+                    </button>
+                    <div class="modal fade" id="review<%= review.id %>" tabindex="-1" aria-labelledby="#review<%= review.id %>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="#review<%= review.id %>">Confirm Delete</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="/products/<%= review.productId %>/reviews/<%= review.id %>?_method=DELETE" name="<%= review.id %>" method="POST">
+                                        <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Delete</button>
+                                    </form>
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.querySelector('form[name="<%= review.id %>"]').addEventListener('submit', e => {
+                                e.preventDefault()
+    
+                                $.asyncForm({
+                                    action: '/products/<%= review.productId %>/reviews/<%= review.id %>?_method=DELETE',                                
+                                    method: 'post',
+                                    
+                                    onLoadFinished: function(response) {
+                                        document.querySelector('div[data-id="<%= review.id %>"]').remove();
+                                    }
+                                    
+                                })
+                            })
+                        </script>
+                    </div>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editreview<%= review.id %>">
+                        Edit this review?
+                    </button>
+                    <div class="modal fade" id="editreview<%= review.id %>" tabindex="-1" aria-labelledby="#editreview<%= review.id %>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Edit your review</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/products/<%= review.productId %>/reviews/<%= review.id %>?_method=PUT" name="editreview<%= review.id %>" method="POST">
+                                    <fieldset class="starability-fade" style="margin-top: 20px;">
+                                        <input type="radio" id="reviewEditRating0" class="input-no-rate" name="reviewRating" value="0" checked="" aria-label="No reviewRating.">
+                                        <input type="radio" id="reviewEditRating1" name="reviewRating" <%- review.rating === 1 ? 'checked' : '' %> value="1">
+                                        <label for="reviewEditRating1" title="Terrible">1 star</label>
+                                        <input type="radio" id="reviewEditRating2" name="reviewRating" <%- review.rating === 2 ? 'checked' : '' %> value="2">
+                                        <label for="reviewEditRating2" title="Not good">2 stars</label>
+                                        <input type="radio" id="reviewEditRating3" name="reviewRating" <%- review.rating === 3 ? 'checked' : '' %> value="3">
+                                        <label for="reviewEditRating3" title="Average">3 stars</label>
+                                        <input type="radio" id="reviewEditRating4" name="reviewRating" <%- review.rating === 4 ? 'checked' : '' %> value="4">
+                                        <label for="reviewEditRating4" title="Very good">4 stars</label>
+                                        <input type="radio" id="reviewEditRating5" name="reviewRating" <%- review.rating === 5 ? 'checked' : '' %> value="5">
+                                        <label for="reviewEditRating5" title="Amazing">5 stars</label>
+                                    </fieldset>
+                                    <textarea name="reviewBody" placeholder="What do you think of this product?"><%= review.body %></textarea>
+                                    <input type="text" name="productId" value="<%= review.productId %>" hidden="">
+                                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Submit edit</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.querySelector('form[name="editreview<%= review.id %>"]').addEventListener('submit', e => {
+                                                    e.preventDefault();
+
+                                                    $.asyncForm({
+                                                        action: '/products/<%= review.productId %>/reviews/<%= review.id %>?_method=PUT',                                
+                                                        method: 'post',
+                                                        params: {
+                                                            reviewRating: document.querySelector('form[name="editreview<%= review.id %>"]').reviewRating.value,
+                                                            reviewBody: document.querySelector('form[name="editreview<%= review.id %>"]').reviewBody.value
+                                                        },
+                                                        onLoadFinished: function(response) {
+                                                            document.querySelector('div[data-id="<%= review.id %>"] h5').textContent = <%= currentUser.username %> + ': ' + document.querySelector('form[name="editreview<%= review.id %>"]').reviewBody.value;
+                                                            document.querySelector('div[data-id="<%= review.id %>"] h6').textContent = document.querySelector('form[name="editreview<%= review.id %>"]').reviewRating.value + 'stars';
+                                                        }
+                                                        
+                                                    })
+                                                })
+                        </script>
+                    </div>
+                <% } %>
+            </div>
+        <% }); %>
+        <div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <% if (reviewsPaginate.page > 1) { %>
+                        <li class="page-item"><a class="page-link" href="/products/<%= product.id %>?reviews_page=<%= reviewsPaginate.page - 1 %>">Previous</a></li>
+                    <% } else { %>
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <% } %>
+        
+                    <% if (reviewsPaginate.page > 4) { %>
+                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                    <% } %>
+        
+                    <% for(let i = reviewsPaginate.page <= 3 ? 1 : reviewsPaginate.page - 3 ; i <= (reviewsPaginate.page + 3 > reviewsPaginate.totalPages ? reviewsPaginate.totalPages : reviewsPaginate.page + 3); i++) { %>
+                        <li class="page-item <%- reviewsPaginate.page === i ? 'active' : '' %>"><a class="page-link" href="/products/<%= product.id %>?reviews_page=<%= i %>"><%= i %></a></li>
+                    <% } %>
+                    
+                    <% if (reviewsPaginate.page <= reviewsPaginate.totalPages - 4) { %>
+                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                    <% } %>
+        
+                    <% if (reviewsPaginate.page < reviewsPaginate.totalPages) { %>
+                        <li class="page-item"><a class="page-link" href="/products/<%= product.id %>?reviews_page=<%= reviewsPaginate.page + 1 %>">Next</a></li>
+                    <% } else { %>
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    <% } else { %>
+        No reviews yet
+    <% } %>
+</div>
+
+<% if (currentUser) { %>
+    <div>
+        <form action="/products/<%= product.id %>/reviews" method="POST" name="formCreateReview" enctype="multipart/form-data">
+            <fieldset class="starability-fade" style="margin-top: 20px;">
+                <input type="radio" id="reviewCreateRating0" class="input-no-rate" name="reviewRating" value="0" checked aria-label="No reviewRating." />
+                <input type="radio" id="reviewCreateRating1" name="reviewRating" value="1" />
+                <label for="reviewCreateRating1" title="Terrible">1 star</label>
+                <input type="radio" id="reviewCreateRating2" name="reviewRating" value="2" />
+                <label for="reviewCreateRating2" title="Not good">2 stars</label>
+                <input type="radio" id="reviewCreateRating3" name="reviewRating" value="3" />
+                <label for="reviewCreateRating3" title="Average">3 stars</label>
+                <input type="radio" id="reviewCreateRating4" name="reviewRating" value="4" />
+                <label for="reviewCreateRating4" title="Very good">4 stars</label>
+                <input type="radio" id="reviewCreateRating5" name="reviewRating" value="5" />
+                <label for="reviewCreateRating5" title="Amazing">5 stars</label>
+            </fieldset>
+            <textarea name="reviewBody" placeholder="What do you think of this product?"></textarea>
+            <input type="text" name="productId" value="<%= product.id %>" hidden />
+            <input type="submit" value="Review this product" />
+        </form>
+    </div>
+<% } %>
+
 <script>
     var product =  <%- JSON.stringify(product) %>;
+    var reviewCreateUrl = `${window.location.protocol}//${window.location.host}/products/${product.id}/reviews`;
 </script>
+
+<% if (currentUser) { %>
+    <script>
+        const formCreateReview = document.querySelector('form[name="formCreateReview"]');
+        const reviewsList = document.querySelector('div.reviews-list');
+    
+        formCreateReview.addEventListener('submit', e => {
+            e.preventDefault();
+            const reviewRating = document.querySelector('input[name="reviewRating"]:checked');
+            const reviewBody = document.querySelector('textarea[name="reviewBody"]');
+    
+            const reviewCreateRating0 = document.querySelector('input#reviewCreateRating0');
+    
+            if (Number(reviewRating.value) < 1 || Number(reviewRating.value) > 5) {
+                alert('Please choose a rating star!');
+                return;
+            }
+    
+            $.ajax({
+               type: "POST",
+               url: reviewCreateUrl,
+               data: $(formCreateReview).serialize(),
+               success: function(data) {
+                    reviewBody.value = '';
+                    reviewCreateRating0.checked = true;
+    
+                    // Create new review node, contains review info, edit and delete button
+                    if (data.ok) {
+
+                        // Create New Review Element to add the the list
+                        const reviewElement = document.createElement('div');
+                        reviewElement.setAttribute('data-id', data.review.id);
+
+                        const reviewBodyElement = document.createElement('h5');
+                        reviewBodyElement.textContent = data.review.authorUsername + ": " + data.review.body;
+
+                        const reviewRatingElement = document.createElement('h6');
+                        reviewRatingElement.innerHTML = data.review.rating + `${data.review.rating === 1 ? 'star' : 'stars'}`;
+
+                        reviewElement.appendChild(reviewBodyElement);
+                        reviewElement.appendChild(reviewRatingElement);
+
+                        // ============= Create Delete Button and Delete Modal
+                        const deleteButton = document.createElement('button');
+                        deleteButton.type = 'button';
+                        deleteButton.className = 'btn btn-primary';
+                        deleteButton.setAttribute('data-bs-toggle', 'modal');
+                        deleteButton.setAttribute('data-bs-target', `#review${data.review.id}`);
+                        deleteButton.textContent = 'Delete this review?';
+
+                        const modalConfirmDelete = document.createElement('div');
+                        modalConfirmDelete.className = 'modal fade';
+                        modalConfirmDelete.id = `review${data.review.id}`;
+                        modalConfirmDelete.tabIndex = -1;
+                        modalConfirmDelete.setAttribute('aria-labelledby', `#review${data.review.id}`);
+                        modalConfirmDelete.setAttribute('aria-hidden', true);
+                        modalConfirmDelete.innerHTML = `
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Confirm delete?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-footer">
+                                <form action="/products/${product._id}/reviews/${data.review.id}?_method=DELETE" name="${data.review.id}" method="POST">
+                                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Delete</button>
+                                </form>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                            </div>
+                        </div>`;
+                        
+                        const scriptDelete = document.createElement('script');
+                        scriptDelete.innerHTML = `const formDeleteReview = document.querySelector('form[name="${data.review.id}"]')
+                                                formDeleteReview.addEventListener('submit', e => {
+                                                    e.preventDefault()
+
+                                                    $.asyncForm({
+                                                        action: '/products/${product._id}/reviews/${data.review.id}?_method=DELETE',                                
+                                                        method: 'post',
+                                                        
+                                                        onLoadFinished: function(response) {
+                                                            document.querySelector('div[data-id="${data.review.id}"]').remove();
+                                                        }
+                                                        
+                                                    })
+                                                })`;
+                        
+                        modalConfirmDelete.appendChild(scriptDelete);
+                        
+                        reviewElement.appendChild(deleteButton);
+                        reviewElement.appendChild(modalConfirmDelete);
+                        // ============= END OF Create Delete Button and Delete Modal
+
+                        // ============= Create Edit Button And Edit Modal
+                        const editButton = document.createElement('button');
+                        editButton.type = 'button';
+                        editButton.className = 'btn btn-primary';
+                        editButton.setAttribute('data-bs-toggle', 'modal');
+                        editButton.setAttribute('data-bs-target', `#editreview${data.review.id}`);
+                        editButton.textContent = 'Edit this review?';
+
+                        const modalConfirmEdit = document.createElement('div');
+                        modalConfirmEdit.className = 'modal fade';
+                        modalConfirmEdit.id = `editreview${data.review.id}`;
+                        modalConfirmEdit.tabIndex = -1;
+                        modalConfirmEdit.setAttribute('aria-labelledby', `#editreview${data.review.id}`);
+                        modalConfirmEdit.setAttribute('aria-hidden', true);
+                        modalConfirmEdit.innerHTML = `
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Edit your review</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/products/${product._id}/reviews/${data.review.id}?_method=PUT" name="editreview${data.review.id}" method="POST">
+                                    <fieldset class="starability-fade" style="margin-top: 20px;">
+                                        <input type="radio" id="reviewEditRating0" class="input-no-rate" name="reviewRating" value="0" checked aria-label="No reviewRating." />
+                                        <input type="radio" id="reviewEditRating1" name="reviewRating" ${data.review.rating === 1 ? 'checked' : '' } value="1" />
+                                        <label for="reviewEditRating1" title="Terrible">1 star</label>
+                                        <input type="radio" id="reviewEditRating2" name="reviewRating" ${data.review.rating === 2 ? 'checked' : '' } value="2" />
+                                        <label for="reviewEditRating2" title="Not good">2 stars</label>
+                                        <input type="radio" id="reviewEditRating3" name="reviewRating" ${data.review.rating === 3 ? 'checked' : '' } value="3" />
+                                        <label for="reviewEditRating3" title="Average">3 stars</label>
+                                        <input type="radio" id="reviewEditRating4" name="reviewRating" ${data.review.rating === 4 ? 'checked' : '' } value="4" />
+                                        <label for="reviewEditRating4" title="Very good">4 stars</label>
+                                        <input type="radio" id="reviewEditRating5" name="reviewRating" ${data.review.rating === 5 ? 'checked' : '' } value="5" />
+                                        <label for="reviewEditRating5" title="Amazing">5 stars</label>
+                                    </fieldset>
+                                    <textarea name="reviewBody" placeholder="What do you think of this product?">${data.review.body}</textarea>
+                                    <input type="text" name="productId" value="<%= product.id %>" hidden />
+                                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Submit edit</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                            </div>
+                        </div>`;
+                        
+                        const scriptEdit = document.createElement('script');
+                        scriptEdit.innerHTML = `const formEditReview = document.querySelector('form[name="editreview${data.review.id}"]')
+                                                formEditReview.addEventListener('submit', e => {
+                                                    e.preventDefault();
+
+                                                    const newBody = formEditReview.reviewBody.value;
+                                                    const newRating = formEditReview.reviewRating.value;
+
+                                                    $.asyncForm({
+                                                        action: '/products/${product._id}/reviews/${data.review.id}?_method=PUT',                                
+                                                        method: 'post',
+                                                        params: {
+                                                            reviewRating: formEditReview.reviewRating.value,
+                                                            reviewBody: formEditReview.reviewBody.value
+                                                        },
+                                                        onLoadFinished: function(response) {
+                                                            document.querySelector('div[data-id="${data.review.id}"] h5').textContent = ${data.review.authorUsername} + ': ' + formEditReview.reviewBody.value;
+                                                            document.querySelector('div[data-id="${data.review.id}"] h6').textContent = formEditReview.reviewRating.value + 'stars';
+                                                        }
+                                                        
+                                                    })
+                                                })`;
+                        
+                        modalConfirmEdit.appendChild(scriptEdit);
+                        
+                        reviewElement.appendChild(editButton);
+                        reviewElement.appendChild(modalConfirmEdit);
+                        // ============= END OF Create Edit Button And Edit Modal
+
+                        reviewsList.appendChild(reviewElement);
+                    } else {
+                        alert(data.errorMsg);
+                    }
+               }
+            });
+        })
+    
+    </script>
+<% } %>
 
 <script>
 	mapboxgl.accessToken = 'pk.eyJ1Ijoibmd1eWVuZG9raGFjaGlldSIsImEiOiJja3NkZno4NDcwcWRhMnpvMnNvcjhpN2F4In0.Sj1PbMD37eqqcAER1tic9g';
@@ -82,6 +421,6 @@
     new mapboxgl.Marker(el)
     .setLngLat(product.geoJSON.geometry.coordinates)
     .setPopup(new mapboxgl.Popup({ offset: 25 }) 
-    .setHTML(`<h3>${product.title}</h3><p>${product.location.ward}, ${product.location.district}, ${product.location.province}</p>`))
+    .setHTML(`<h3>` + product.title + `</h3><p>` + product.location.ward + `,` + product.location.district + `,` + product.location.province + `</p>`))
     .addTo(map);
 </script>

@@ -1,6 +1,7 @@
 const striptags = require('striptags');
 const { cloudinary, geocoding } = require('../helpers');
 const Product = require('../models/product');
+const Review = require('../models/review');
 
 module.exports = {
     getCreateNewProduct(req, res, next) {
@@ -106,8 +107,19 @@ module.exports = {
                 req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
                 return res.render('error/index');
             }
+
+            const reviewsPaginate = await Review.paginate({
+                productId: product.id,
+            }, {
+                sort: { _id: -1 },
+                limit: 5,
+                page: req.query.reviews_page || 1,
+                populate: {
+                    path: 'creator'
+                }
+            })
             
-            res.render('product/showSingle', { product });
+            res.render('product/showSingle', { product, reviewsPaginate });
         } catch (error) {
             req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
             return res.render('error/index');
