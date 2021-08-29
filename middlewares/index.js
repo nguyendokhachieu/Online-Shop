@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const User = require('../models/user');
+const Review = require('../models/review');
 
 module.exports = {
     isLoggedIn(req, res, next) {
@@ -50,6 +51,27 @@ module.exports = {
         } catch (error) {
             req.session.errorMsg = 'Cannot find current user';
             return res.render('error/index');
+        }
+    },
+
+    async checkOneTimeReview(req, res, next) {
+        try {
+            const review = await Review.findOne({
+                creator: req.user._id,
+                productId: req.body.productId,
+            });
+
+
+            if (!review) return next();
+            else return res.json({
+                ok: false,
+                errorMsg: 'You can only review this product one time!'
+            })
+        } catch (error) {
+            return res.json({
+                ok: false,
+                errorMsg: 'You can only review this product one time!'
+            })
         }
     }
 }
