@@ -34,6 +34,16 @@ const ProductSchema = new Schema({
 
 ProductSchema.plugin(mongoosePaginate);
 
+ProductSchema.index({ 
+  title: 'text', 
+  description: 'text', 
+  location: {
+    province: 'text',
+    district: 'text',
+    ward: 'text'
+  }
+});
+
 module.exports = new mongoose.model('Product', ProductSchema);
 
 /*

@@ -1,0 +1,59 @@
+<% layout('layouts/boilerplate') -%>
+<h1>This is SEARCH PAGE</h1>
+
+<div>
+    <% if (successMsg) { %>
+        <h1><%= successMsg %></h1>
+    <% } %>
+    <% if (errorMsg) { %>
+        <h1><%= errorMsg %></h1>
+    <% } %>
+</div>
+
+<form action="/search" method="GET">
+    <input type="search" name="q" placeholder="Search for places, title, description, ..." value="<%= unescapedQuery || '' %>" />
+    <input type="number" min="0" step="1000" name="minPrice" placeholder="Minimum price" value="<%= minPrice || '' %>" />
+    <input type="number" min="0" step="1000" name="maxPrice" placeholder="Maximum price" value="<%= maxPrice || '' %>" />
+    <button type="submit">Search</button>
+</form>
+
+<% productsPaginate.docs.forEach(function(product) { %>
+    <div>
+        Title: <%= product.title %>
+        Price: <%= product.price %>
+        Seller: <%= product.seller.username %>
+        CreatedAt: <%= product.createdAt.getDate() %>/<%= product.createdAt.getMonth() + 1 %>/<%= product.createdAt.getFullYear() %>, <%= product.createdAt.getHours() %>:<%= product.createdAt.getMinutes() %>:<%= product.createdAt.getSeconds() %>
+        <a href="/products/<%= product.id %>">Show details</a>
+    </div>
+    <hr />
+<% }) %>
+
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <% if (productsPaginate.page > 1) { %>
+                <li class="page-item"><a class="page-link" href="/search?q=<%= unescapedQuery || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>&page=<%= productsPaginate.page - 1 %>">Previous</a></li>
+            <% } else { %>
+                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+            <% } %>
+
+            <% if (productsPaginate.page > 4) { %>
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            <% } %>
+
+            <% for(let i = productsPaginate.page <= 3 ? 1 : productsPaginate.page - 3 ; i <= (productsPaginate.page + 3 > productsPaginate.totalPages ? productsPaginate.totalPages : productsPaginate.page + 3); i++) { %>
+                <li class="page-item <%- productsPaginate.page === i ? 'active' : '' %>"><a class="page-link" href="/search?q=<%= unescapedQuery || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>&page=<%= i %>"><%= i %></a></li>
+            <% } %>
+            
+            <% if (productsPaginate.page <= productsPaginate.totalPages - 4) { %>
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            <% } %>
+
+            <% if (productsPaginate.page < productsPaginate.totalPages) { %>
+                <li class="page-item"><a class="page-link" href="/search?q=<%= unescapedQuery || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>&page=<%= productsPaginate.page + 1 %>">Next</a></li>
+            <% } else { %>
+                <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
