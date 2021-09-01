@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
 
 .underline-shadow {
     box-shadow: inset 0 -0.125em 0 0 #fff, inset 0 -0.375em 0 0 rgb(99 102 241 / 20%);
@@ -15,6 +16,10 @@
 
 .nunito {
     font-family: 'Nunito', sans-serif;
+}
+
+.merriweather {
+  font-family: 'Merriweather', serif;
 }
 
 .hover-full-w-underline {

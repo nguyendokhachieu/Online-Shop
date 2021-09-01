@@ -148,59 +148,59 @@ module.exports = {
             const product = await Product.findById(req.params.product_id);
 
             if (!product) {
-                req.session.errorMsg = 'Sorry, we cannot find the product that you requested!';
+                req.session.errorMsg = 'Xin lỗi, chúng tôi không thể tìm sản phẩm!';
                 return res.render('error/index');
             }
 
             if (!req.body.title.trim().length) {
-                req.session.errorMsg = 'Title cannot be an empty string!';
+                req.session.errorMsg = 'Tên sản phẩm không được rỗng!';
                 return res.redirect(`/products/${req.params.product_id}/edit`);
             }
             
             if (isNaN(req.body.price)) {
-                req.session.errorMsg = 'Price must be a number!';
+                req.session.errorMsg = 'Giá phải là một số!';
                 return res.redirect(`/products/${req.params.product_id}/edit`);
             }
 
             if (Number(req.body.price) < 0) {
-                req.session.errorMsg = 'Price must be greater than or equal to 0!';
+                req.session.errorMsg = 'Giá phải lớn hơn hoặc bằng 0!';
                 return res.redirect(`/products/${req.params.product_id}/edit`);
             }
 
             if (Number(req.body.province) === 0) {
-                req.session.errorMsg = 'Please choose province!';
+                req.session.errorMsg = 'Vui lòng chọn tỉnh / thành phố nơi bạn sống!';
                 return res.redirect(`/products/${req.params.product_id}/edit`);
             }
 
             if (Number(req.body.district) === 0) {
-                req.session.errorMsg = 'Please choose district!';
+                req.session.errorMsg = 'Vui lòng chọn quận / huyện / thị xã nơi bạn sống!';
                 return res.redirect(`/products/${req.params.product_id}/edit`);
             }
 
             if (Number(req.body.ward) === 0) {
-                req.session.errorMsg = 'Please choose ward!';
+                req.session.errorMsg = 'Vui lòng chọn xã / phường / thị trấn nơi bạn sống!';
                 return res.redirect(`/products/${req.params.product_id}/edit`);
             }
 
             if (req.files && req.files.length) {
                 for (const file of req.files) {
                     if (!file.mimetype.startsWith('image')) {
-                        req.session.errorMsg = 'One or multiple files are not in image format!';
+                        req.session.errorMsg = 'Tập tin có vẻ như không phải định dạng hình ảnh, vui lòng kiểm tra lại!';
                         return res.redirect(`/products/${req.params.product_id}/edit`);
                     }
                 }
             }
 
-            const deletedImagesLength = req.body.deletedImages.length || 0;
-            const newImagesLength = req.files.length || 4;
-            const currentImagesLength = product.images.length;
-
+            const deletedImagesLength = req.body.deletedImages ? req.body.deletedImages.length : 0;
+            const newImagesLength = req.files ? req.files.length : 0;
+            const currentImagesLength = product.images.length || 0;
+            
             if (currentImagesLength - deletedImagesLength + newImagesLength > 4) {
-                req.session.errorMsg = 'Sorry, you can only upload maximum of 4 images per product!';
-                return res.render('error/index');
+                req.session.errorMsg = 'Xin lỗi, bạn chỉ có thể tải lên tối đa 4 hình trên một sản phẩm, bao gồm cả hình hiện tại!';
+                return res.redirect(`/products/${req.params.product_id}/edit`);
             }
 
-            product.title = req.body.title.trim();
+            product.title = striptags(req.body.title.trim());
             product.price = Number(req.body.price);
             product.description = striptags(req.body.description.trim(), [
                 'p', 'h1', 'h2', 'h3', 'h4', 'strong', 'i', 'a', 'ul', 'li', 'ol', 'blockquote', 'figure', 'table', 'tbody', 'tr', 'td'
@@ -208,7 +208,6 @@ module.exports = {
 
             if ((product.location.province !== req.body.province) || (product.location.district !== req.body.district) || (product.location.ward !== req.body.ward)) {
                 const geoJSON = await geocoding(`${req.body.ward.split('-')[1]} ${req.body.district.split('-')[1]} ${req.body.province.split('-')[1]}`);
-
                 product.geoJSON = geoJSON;
                 product.location.province = req.body.province;
                 product.location.district = req.body.district;
@@ -240,11 +239,11 @@ module.exports = {
             }
 
             await product.save();
-            req.session.successMsg = 'Edited your product successfully!';
+            req.session.successMsg = 'Cập nhật sản phẩm thành công!';
             return res.redirect(`/products/${product.id}`);
         } catch (error) {
-            req.session.errorMsg = 'Sorry, some unexpected errors happened while we tried to edit your product, please try again!';
-            return res.render('error/index');
+            req.session.errorMsg = 'Có lỗi xảy ra, vui lòng thử lại!';
+            return res.redirect(`/products/${req.params.product_id}/edit`);
         }
     },
 

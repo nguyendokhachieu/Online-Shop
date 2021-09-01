@@ -26,6 +26,12 @@
     </header>
     <div class="container mx-auto md:px-20 px-10 mt-48 lg:mt-32">
         <div class="shadow p-5 rounded-md bg-white mb-4 mt-1">
+            <% if (successMsg) { %>
+                <div class="mb-3 p-3 flex justify-start bg-green-100 rounded items-center border-l-2 border-green-500">
+                    <i class="fad fa-check-circle mr-2 text-green-600 text-3xl"></i>
+                    <span class="text-green-600"><%= successMsg %></span>
+                </div>
+                <% } %>
             <div class="mb-4 flex justify-between">
                 <h1 class="text-xl font-semibold inline nunito text-blue-700"><%= product.title %></span></h1>
                 <div class="transition-all duration-300 bg-green-50 hover:bg-green-100 rounded-md">
