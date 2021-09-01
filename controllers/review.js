@@ -33,6 +33,7 @@ module.exports = {
                     body: review.body,
                     rating: review.rating,
                     authorUsername: req.user.username,
+                    authorSecureUrl: req.user.image.secure_url,
                 }, 
                 ok: true 
             });
@@ -112,6 +113,7 @@ module.exports = {
                     body: review.body,
                     rating: review.rating,
                     authorUsername: req.user.username,
+                    authorSecureUrl: req.user.image.secure_url,
                 }, 
                 ok: true,
             });
