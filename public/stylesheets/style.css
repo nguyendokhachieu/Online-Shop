@@ -130,6 +130,8 @@ body.modal-active {
 
 .paginate-item-active {
   background-color: rgba(198, 198, 245, 0.75);
+  border-radius: 2px;
+  pointer-events: none;
 }
 
 .paginate-item-disabled {
