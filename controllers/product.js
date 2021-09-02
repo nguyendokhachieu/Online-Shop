@@ -11,39 +11,39 @@ module.exports = {
     async postCreateNewProduct(req, res, next) {
         try {
             if (!req.body.title.trim().length) {
-                req.session.errorMsg = 'Title cannot be an empty string!';
+                req.session.errorMsg = 'Tên sản phẩm không được rỗng!';
                 return res.redirect('/products/create_new');
             }
             
             if (isNaN(req.body.price)) {
-                req.session.errorMsg = 'Price must be a number!';
+                req.session.errorMsg = 'Giá sản phẩm phải là một số!';
                 return res.redirect('/products/create_new');
             }
 
             if (Number(req.body.price) < 0) {
-                req.session.errorMsg = 'Price must be greater than or equal to 0!';
+                req.session.errorMsg = 'Giá sản phẩm phải là một số và lớn hơn hoặc bằng 0!';
                 return res.redirect('/products/create_new');
             }
 
             if (Number(req.body.province) === 0) {
-                req.session.errorMsg = 'Please choose province!';
+                req.session.errorMsg = 'Vui lòng chọn tỉnh / thành phố';
                 return res.redirect('/products/create_new');
             }
 
             if (Number(req.body.district) === 0) {
-                req.session.errorMsg = 'Please choose district!';
+                req.session.errorMsg = 'Vui lòng chọn quận / huyện / thị xã';
                 return res.redirect('/products/create_new');
             }
 
             if (Number(req.body.ward) === 0) {
-                req.session.errorMsg = 'Please choose ward!';
+                req.session.errorMsg = 'Vui lòng chọn xã / phường / thị trấn';
                 return res.redirect('/products/create_new');
             }
 
             if (req.files && req.files.length) {
                 for (const file of req.files) {
                     if (!file.mimetype.startsWith('image')) {
-                        req.session.errorMsg = 'One or multiple files are not in image format!';
+                        req.session.errorMsg = 'Có vẻ như tập tin tải lên không phải là hình ảnh, vui lòng kiểm tra lại!';
                         return res.redirect('/products/create_new');
                     }
                 }
@@ -88,11 +88,11 @@ module.exports = {
             
             const newProduct = await Product.create(product);
 
-            req.session.successMsg = 'New product created successfully!';
+            req.session.successMsg = 'Đăng sản phẩm mới thành công!';
             res.redirect(`/products/${newProduct.id}`);
 
         } catch (error) {
-            req.session.errorMsg = 'Some unexpected errors happened when we tried to create new post! Please try again!';
+            req.session.errorMsg = 'Có vẻ như có lỗi xảy ra trong quá trình đăng sản phẩm, xin vui lòng thử lại';
             return res.redirect('/products/create_new');
         } 
     },
