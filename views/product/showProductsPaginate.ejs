@@ -1,101 +1,53 @@
 <% layout('layouts/boilerplate') -%>
 
-<div class="body-wrapper">
-    <header class="bg-indigo-500 shadow-md fixed top-0 left-0 z-10 w-full">
-        <div class="container mx-auto md:px-20 px-10 pb-2 flex justify-between items-center">
-            <div class="page-logo text-white text-2xl py-2">
-                <a href="/">Marketplace</a>
-            </div>
-            <div class="top-nav-buttons text-white">
-                <ul class="flex">
-                    <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-home md:mr-2"></i><span class="md:inline hidden">Trang chủ</span></a></li>
-                    <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-list-alt md:mr-2"></i><span class="md:inline hidden">Quản lý sản phẩm</span></a></li>
-                </ul>
-            </div>
+<div class="container mx-auto md:px-20 px-10 mt-32">
+    <div class="productsListWrapper shadow p-5 rounded-md bg-white mb-4">
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold inline"><i class="fal fa-list-alt font-light text-indigo-600 mr-2"></i><span class="underline-shadow">Danh sách sản phẩm</span></h2>
         </div>
-        <div class="container mx-auto md:px-20 px-10 flex justify-between items-center pb-3 flex-col lg:flex-row">
-            <form action="#" class="lg:w-2/3 w-full lg:mb-0 mb-2">
-                <input type="search" class="px-4 py-2 outline-none rounded-md w-full shadow-md" placeholder="Tìm kiếm sản phẩm, địa điểm, giá cả, ...">
-                <button type="submit" class="hidden">Tìm kiếm</button>
-            </form>
-            <div class="text-right">
-                <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-user mr-2"></i><span>Đăng nhập</span></button>
-                <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-plus-square mr-2"></i><span>Đăng tin</span></button>
-            </div>
-        </div>
-    </header>
-    <div class="container mx-auto md:px-20 px-10 mt-32">
-        <div class="productsListWrapper shadow p-5 rounded-md bg-white mb-4">
-            <div class="mb-4">
-                <h2 class="text-xl font-semibold inline"><i class="fal fa-list-alt font-light text-indigo-600 mr-2"></i><span class="underline-shadow">Danh sách sản phẩm</span></h2>
-            </div>
-            <div class="productsList">
-                <div class="grid grid-cols-1 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3">
-                    <% productsPaginate.docs.forEach(function(product) { %>
-                        <a href="/products/<%= product._id %>" class="product-item inline-block" title="<%= product.title %>">
-                            <div class="flex flex-col items-center justify-center px-2 py-3 border-gray-200 border transform hover:shadow-md transition-all duration-300 rounded-sm">
-                                <img class="w-full h-36 rounded-sm object-cover" src="<%= product.images.length ? product.images[0].secure_url : '/images/default-no-image.jpg' %>" alt="category" />
-                                <h4 class="text-left mt-1 mb-1 leading-5"><%= product.title %></h4>
-                                <div class="w-full text-left text-green-800 font-semibold"><%= new Intl.NumberFormat().format(product.price) %> VND</div>
-                                <div class="w-full">
-                                    <!-- <i class="far fa-clock text-gray-500 font-light text-xs mr-1"></i>
-                                    <span class="text-gray-500 font-light text-xs mr-1">6 giờ trước</span> -->
-                                </div>
+        <div class="productsList">
+            <div class="grid grid-cols-1 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3">
+                <% productsPaginate.docs.forEach(function(product) { %>
+                    <a href="/products/<%= product._id %>" class="product-item inline-block" title="<%= product.title %>">
+                        <div class="flex flex-col items-center justify-center px-2 py-3 border-gray-200 border transform hover:shadow-md transition-all duration-300 rounded-sm">
+                            <img class="w-full h-36 rounded-sm object-cover" src="<%= product.images.length ? product.images[0].secure_url : '/images/default-no-image.jpg' %>" alt="category" />
+                            <h4 class="text-left mt-1 mb-1 leading-5"><%= product.title %></h4>
+                            <div class="w-full text-left text-green-800 font-semibold"><%= new Intl.NumberFormat().format(product.price) %> VND</div>
+                            <div class="w-full">
+                                <!-- <i class="far fa-clock text-gray-500 font-light text-xs mr-1"></i>
+                                <span class="text-gray-500 font-light text-xs mr-1">6 giờ trước</span> -->
                             </div>
-                        </a>       
-                    <% }) %>
-                </div>
+                        </div>
+                    </a>       
+                <% }) %>
             </div>
-            <nav class="pt-5 flex justify-center">
-                <ul class="flex justify-start">
-                    <% if (productsPaginate.page > 1) { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= productsPaginate.page - 1 %>">Previous</a></li>
-                    <% } else { %>
-                        <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
-                    <% } %>
-        
-                    <% if (productsPaginate.page > 4) { %>
-                        <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
-                    <% } %>
-        
-                    <% for(let i = productsPaginate.page <= 3 ? 1 : productsPaginate.page - 3 ; i <= (productsPaginate.page + 3 > productsPaginate.totalPages ? productsPaginate.totalPages : productsPaginate.page + 3); i++) { %>
-                        <li class="<%- productsPaginate.page === i ? 'paginate-item-active' : '' %>"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= i %>"><%= i %></a></li>
-                    <% } %>
-                    
-                    <% if (productsPaginate.page <= productsPaginate.totalPages - 4) { %>
-                        <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
-                    <% } %>
-        
-                    <% if (productsPaginate.page < productsPaginate.totalPages) { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= productsPaginate.page + 1 %>">Next</a></li>
-                    <% } else { %>
-                        <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
-                    <% } %>
-                </ul>
-            </nav>
         </div>
+        <nav class="pt-5 flex justify-center">
+            <ul class="flex justify-start">
+                <% if (productsPaginate.page > 1) { %>
+                    <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= productsPaginate.page - 1 %>">Previous</a></li>
+                <% } else { %>
+                    <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
+                <% } %>
+    
+                <% if (productsPaginate.page > 4) { %>
+                    <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                <% } %>
+    
+                <% for(let i = productsPaginate.page <= 3 ? 1 : productsPaginate.page - 3 ; i <= (productsPaginate.page + 3 > productsPaginate.totalPages ? productsPaginate.totalPages : productsPaginate.page + 3); i++) { %>
+                    <li class="<%- productsPaginate.page === i ? 'paginate-item-active' : '' %>"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= i %>"><%= i %></a></li>
+                <% } %>
+                
+                <% if (productsPaginate.page <= productsPaginate.totalPages - 4) { %>
+                    <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                <% } %>
+    
+                <% if (productsPaginate.page < productsPaginate.totalPages) { %>
+                    <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= productsPaginate.page + 1 %>">Next</a></li>
+                <% } else { %>
+                    <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
+                <% } %>
+            </ul>
+        </nav>
     </div>
-    <footer class="bg-white pb-10">
-        <div class="container mx-auto md:px-20 px-10 mt-2 pt-8 flex justify-start flex-wrap">
-            <div class="w-full md:w-4/12 lg:w-6/12 mb-5 md:mb-0">
-                <h2><a href="/" class="font-bold text-xl mb-1">Marketplace</a></h2>
-                <p class="text-gray-500 break-words">Marketplace - Trung gian mua sắm của bạn</p>
-            </div>
-            <div class="w-full md:w-4/12 lg:w-3/12 mb-5 md:mb-0">
-                <h3 class="font-semibold text-md">Hỗ trợ khách hàng</h3>
-                <ul>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Trợ giúp</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Cách đăng sản phẩm</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Liên hệ</a></li>
-                </ul>
-            </div>
-            <div class="w-full md:w-4/12 lg:w-3/12">
-                <h3 class="font-semibold text-md">Về Marketplace</h3>
-                <ul>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Giới thiệu</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Truyền thông</a></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
 </div>

@@ -13,8 +13,10 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/starability-fade.min.css" />
   </head>
   <body class="bg-indigo-50">
-    <section>
+    <div class="body-wrapper">
+      <%- include('../partials/header') %>
       <%- body -%>
-    </section>
+      <%- include('../partials/footer') %>
+    </div>
   </body>
 </html>

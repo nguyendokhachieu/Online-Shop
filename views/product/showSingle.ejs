@@ -1,407 +1,359 @@
 <% layout('layouts/boilerplate') -%>
 
-<div class="body-wrapper">
-    <header class="bg-indigo-500 shadow-md fixed top-0 left-0 z-10 w-full">
-        <div class="container mx-auto md:px-20 px-10 pb-2 flex justify-between items-center">
-            <div class="page-logo text-white text-2xl py-2">
-                <a href="/">Marketplace</a>
+<div class="container mx-auto md:px-20 px-10 mt-48 lg:mt-32">
+    <div class="shadow p-5 rounded-md bg-white mb-4 mt-1">
+        <% if (successMsg) { %>
+            <div class="mb-3 p-3 flex justify-start bg-green-100 rounded items-center border-l-2 border-green-500">
+                <i class="fad fa-check-circle mr-2 text-green-600 text-3xl"></i>
+                <span class="text-green-600"><%= successMsg %></span>
             </div>
-            <div class="top-nav-buttons text-white">
-                <ul class="flex">
-                    <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-home md:mr-2"></i><span class="md:inline hidden">Trang chủ</span></a></li>
-                    <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-list-alt md:mr-2"></i><span class="md:inline hidden">Quản lý sản phẩm</span></a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="container mx-auto md:px-20 px-10 flex justify-between items-center pb-3 flex-col lg:flex-row">
-            <form action="#" class="lg:w-2/3 w-full lg:mb-0 mb-2">
-                <input type="search" class="px-4 py-2 outline-none rounded-md w-full shadow-md" placeholder="Tìm kiếm sản phẩm, địa điểm, giá cả, ...">
-                <button type="submit" class="hidden">Tìm kiếm</button>
-            </form>
-            <div class="text-right">
-                <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-user mr-2"></i><span>Đăng nhập</span></button>
-                <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-plus-square mr-2"></i><span>Đăng tin</span></button>
+        <% } %>
+        <div class="mb-4 flex justify-between">
+            <h1 class="text-xl font-semibold inline nunito text-blue-700"><%= product.title %></span></h1>
+            <div class="transition-all duration-300 bg-green-50 hover:bg-green-100 rounded-md">
+                <a href="/products" class="text-green-600 inline-block px-4 py-1"><i class="far fa-chevron-left mr-2 text-green-500"></i>Về danh sách</a>
             </div>
         </div>
-    </header>
-    <div class="container mx-auto md:px-20 px-10 mt-48 lg:mt-32">
-        <div class="shadow p-5 rounded-md bg-white mb-4 mt-1">
-            <% if (successMsg) { %>
-                <div class="mb-3 p-3 flex justify-start bg-green-100 rounded items-center border-l-2 border-green-500">
-                    <i class="fad fa-check-circle mr-2 text-green-600 text-3xl"></i>
-                    <span class="text-green-600"><%= successMsg %></span>
+        <div class="flex justify-between flex-wrap">
+            <div class="w-full lg:w-8/12">
+                <div class="productImgsSlide-container h-96 bg-red-300">
+                    <% if (product.images && product.images.length) { %>
+                        <% product.images.forEach(function(image, index) { %>
+                            <div class="mySlides fade">
+                                <div class="numbertext text-white pt-3 pl-5 opacity-90"><%= index + 1 %> / <%= product.images.length %></div>
+                                <img class="w-full h-96 object-cover" src="<%= image.secure_url %>" alt="" />
+                            </div>
+                        <% }); %>
+                    <% } %>
+                    <a class="productImgsSlide-prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="productImgsSlide-next" onclick="plusSlides(1)">&#10095;</a>
                 </div>
-            <% } %>
-            <div class="mb-4 flex justify-between">
-                <h1 class="text-xl font-semibold inline nunito text-blue-700"><%= product.title %></span></h1>
-                <div class="transition-all duration-300 bg-green-50 hover:bg-green-100 rounded-md">
-                    <a href="/products" class="text-green-600 inline-block px-4 py-1"><i class="far fa-chevron-left mr-2 text-green-500"></i>Về danh sách</a>
+                <div class="mt-3">
+                    <h2 class="text-lg font-semibold inline nunito text-gray-700 break-words"><%= product.title %></span></h2>
+                    <div class="text-red-600 text-lg font-bold py-1"><%= new Intl.NumberFormat().format(product.price) %> VND</div>
+                    <div class="text-blue-500 py-1">
+                        <i class="far fa-map-marker-alt text-lg font-bold mr-2"></i>
+                        <span class="text-sm"><%- product.location.ward.split('-')[1] %>, <%- product.location.district.split('-')[1] %>, <%- product.location.province.split('-')[1] %></span>
+                    </div>
+                    <div class="productMapLocation" id="map"></div>
+                    <div class="text-gray-500 py-2">
+                        <i class="far fa-info-square text-lg font-bold mr-2 text-blue-500"></i>
+                        <span class="text-sm text-blue-500">Mô tả</span>
+                    </div>
+                    <div class="prodDescriptions text-gray-600">
+                        <%- product.description %>
+                    </div>
                 </div>
-            </div>
-            <div class="flex justify-between flex-wrap">
-                <div class="w-full lg:w-8/12">
-                    <div class="productImgsSlide-container h-96 bg-red-300">
-                        <% if (product.images && product.images.length) { %>
-                            <% product.images.forEach(function(image, index) { %>
-                                <div class="mySlides fade">
-                                    <div class="numbertext text-white pt-3 pl-5 opacity-90"><%= index + 1 %> / <%= product.images.length %></div>
-                                    <img class="w-full h-96 object-cover" src="<%= image.secure_url %>" alt="" />
-                                </div>
-                            <% }); %>
+                <div class="reviewsSection">
+                    <div class="text-gray-500 pt-3">
+                        <i class="far fa-tasks text-lg font-bold mr-2 text-blue-500"></i>
+                        <span class="text-sm text-blue-500">Review sản phẩm này</span>
+                        <% if (!currentUser) { %>
+                            <div class="text-center text-gray-500 py-2">
+                                <a href="/user/login?_continue=http://localhost:3000/products/<%= product._id %>" class="text-blue-500 hover:underline">Đăng nhập</a> để review sản phẩm
+                            </div>
                         <% } %>
-                        <a class="productImgsSlide-prev" onclick="plusSlides(-1)">&#10094;</a>
-                        <a class="productImgsSlide-next" onclick="plusSlides(1)">&#10095;</a>
                     </div>
-                    <div class="mt-3">
-                        <h2 class="text-lg font-semibold inline nunito text-gray-700 break-words"><%= product.title %></span></h2>
-                        <div class="text-red-600 text-lg font-bold py-1"><%= new Intl.NumberFormat().format(product.price) %> VND</div>
-                        <div class="text-blue-500 py-1">
-                            <i class="far fa-map-marker-alt text-lg font-bold mr-2"></i>
-                            <span class="text-sm"><%- product.location.ward.split('-')[1] %>, <%- product.location.district.split('-')[1] %>, <%- product.location.province.split('-')[1] %></span>
-                        </div>
-                        <div class="productMapLocation" id="map"></div>
-                        <div class="text-gray-500 py-2">
-                            <i class="far fa-info-square text-lg font-bold mr-2 text-blue-500"></i>
-                            <span class="text-sm text-blue-500">Mô tả</span>
-                        </div>
-                        <div class="prodDescriptions text-gray-600">
-                            <%- product.description %>
-                        </div>
-                    </div>
-                    <div class="reviewsSection">
-                        <div class="text-gray-500 pt-3">
-                            <i class="far fa-tasks text-lg font-bold mr-2 text-blue-500"></i>
-                            <span class="text-sm text-blue-500">Review sản phẩm này</span>
-                            <% if (!currentUser) { %>
-                                <div class="text-center text-gray-500 py-2">
-                                    <a href="/user/login?_continue=http://localhost:3000/products/<%= product._id %>" class="text-blue-500 hover:underline">Đăng nhập</a> để review sản phẩm
-                                </div>
-                            <% } %>
-                        </div>
-                        <div class="createReview">
-                            <% if (currentUser) { %>
-                                <div>
-                                    <form action="/products/<%= product.id %>/reviews" method="POST" name="formCreateReview" enctype="multipart/form-data" class="flex flex-col items-start">
-                                        <fieldset class="starability-fade" style="margin-top: 20px;">
-                                            <input type="radio" id="reviewCreateRating0" class="input-no-rate" name="reviewRating" value="0" checked aria-label="No reviewRating." />
-                                            <input type="radio" id="reviewCreateRating1" name="reviewRating" value="1" />
-                                            <label for="reviewCreateRating1" title="Terrible">1 star</label>
-                                            <input type="radio" id="reviewCreateRating2" name="reviewRating" value="2" />
-                                            <label for="reviewCreateRating2" title="Not good">2 stars</label>
-                                            <input type="radio" id="reviewCreateRating3" name="reviewRating" value="3" />
-                                            <label for="reviewCreateRating3" title="Average">3 stars</label>
-                                            <input type="radio" id="reviewCreateRating4" name="reviewRating" value="4" />
-                                            <label for="reviewCreateRating4" title="Very good">4 stars</label>
-                                            <input type="radio" id="reviewCreateRating5" name="reviewRating" value="5" />
-                                            <label for="reviewCreateRating5" title="Amazing">5 stars</label>
-                                        </fieldset>
-                                        <textarea name="reviewBody" placeholder="Review sản phẩm này" class="outline-none border border-blue-400 resize-none resize-y w-60 px-2 py-2"></textarea>
-                                        <input type="text" name="productId" value="<%= product.id %>" hidden />
-                                        <button type="submit" class="mt-3 px-5 py-2 bg-blue-200 transition-all duration-200 hover:bg-blue-300 rounded-md shadow-sm">Đăng review</button>
-                                    </form>
-                                </div>
-                            <% } %>
-                        </div>
-                        <div class="text-gray-500 py-3">
-                            <i class="far fa-tasks text-lg font-bold mr-2 text-blue-500"></i>
-                            <span class="text-sm text-blue-500">Người khác nghĩ gì?</span>
-                            <% if (!currentUser) { %>
-                                <div class="text-center text-gray-500 py-2">
-                                    <a href="/user/login?_continue=http://localhost:3000/products/<%= product._id %>" class="text-blue-500 hover:underline">Đăng nhập</a> để xem các review sản phẩm
-                                </div>
-                            <% } %>
-                        </div>
+                    <div class="createReview">
                         <% if (currentUser) { %>
-                            <div class="reviews-list">
-                                <% if (reviewsPaginate.docs && reviewsPaginate.docs.length) { %>
-                                    <% reviewsPaginate.docs.forEach(function(review) { %>
-                                        <div class="REVIEWITEM py-2 pb-3 flex justify-start items-center" data-id="<%= currentUser && review.creator.equals(currentUser._id) && review.id %>" >
-                                            <div class="self-start">
-                                                <img class="w-11 h-11 rounded-full object-cover" src="<%= review.creator.image.secure_url %>" alt="user review" />
-                                            </div>
-                                            <div class="ml-3 flex flex-col items-start">
-                                                <div class="flex justify-start items-center flex-wrap">
-                                                    <h4 class="inline font-bold text-gray-700 rounded-sm ">@<%= review.creator.username %></h4>
-                                                    <span class="text-gray-500 px-1">đã vote <%= review.rating %> sao</span>
-                                                    <span>
-                                                        <% for (let s = 0; s < review.rating; s++) { %>
-                                                            <i class="fas fa-star text-yellow-400"></i>
-                                                        <% } %>
-                                                    </span>
-                                                    <% if (currentUser && review.creator.equals(currentUser._id)) { %>
-                                                        <!--MODAL DELETE REVIEW-->
-                                                        <button id="deleteReviewModal" class="modal-open bg-red-200 px-2 text-red-600 rounded-sm transition-all duration-200 hover:bg-red-300 hover:text-red-700 ml-2 shadow-sm">Xóa review</button>
-                                                        <div class="modal deleteReviewModal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
-                                                            <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-                                                            <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
-                                                                <div class="modal-content py-4 text-left px-6">
-                                                                    <!--Title-->
-                                                                    <div class="flex justify-between items-center pb-3">
-                                                                        <p class="text-2xl font-bold">Xóa review này?</p>
-                                                                        <div class="deleteReviewModal modal-close cursor-pointer z-50"><i class="far fa-times"></i></div>
-                                                                    </div>
-                                                                    <!--Body-->
-                                                                    <p>Hành động này sẽ xóa vĩnh viễn và không thể khôi phục!</p>
-                                                                    <!--Footer-->
-                                                                    <div class="flex justify-end pt-2">
-                                                                        <form action="/products/<%= review.productId %>/reviews/<%= review.id %>?_method=DELETE" name="<%= review.id %>" method="POST">
-                                                                            <button type="submit" class="px-4 bg-transparent p-3 rounded-lg text-indigo-500 hover:bg-gray-100 hover:text-indigo-400 mr-2">Xóa</button>
-                                                                        </form>
-                                                                        <button class="deleteReviewModal modal-close px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400">Close</button>
-                                                                    </div>
-                                                                    <script>
-                                                                        document.querySelector('form[name="<%= review.id %>"]').addEventListener('submit', e => {
-                                                                            e.preventDefault()
-                                                
-                                                                            $.asyncForm({
-                                                                                action: '/products/<%= review.productId %>/reviews/<%= review.id %>?_method=DELETE',                                
-                                                                                method: 'post',
-                                                                                
-                                                                                onLoadFinished: function(response) {
-                                                                                    e.preventDefault();
-                                                                                    document.querySelector('div[data-id="<%= review.id %>"]').remove();
-                                                                                }
-                                                                            })
-                                                                        })
-                                                                    </script>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!--END OF MODAL DELETE REVIEW-->
-                
-                                                        <!--MODAL EDIT REVIEW-->
-                                                        <button id="editReviewModal" class="modal-open bg-purple-200 px-2 text-purple-600 rounded-sm transition-all duration-200 hover:bg-purple-300 hover:text-purple-700 ml-2 shadow-sm">Sửa review</button>
-                                                        <div class="modal editReviewModal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
-                                                            <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-                                                            <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
-                                                                <div class="modal-content py-4 text-left px-6">
-                                                                    <!--Title-->
-                                                                    <div class="flex justify-between items-center pb-3">
-                                                                        <p class="text-2xl font-bold">Sửa review</p>
-                                                                        <div class="editReviewModal modal-close cursor-pointer z-50"><i class="far fa-times"></i></div>
-                                                                    </div>
-                                                                    <!--Body-->
-                                                                    <p>
-                                                                        <form action="/products/<%= review.productId %>/reviews/<%= review.id %>?_method=PUT" name="editreview<%= review.id %>" method="POST" class="flex flex-col items-start">
-                                                                            <fieldset class="starability-fade" style="margin-top: 20px;">
-                                                                                <input type="radio" id="reviewEditRating0" class="input-no-rate" name="reviewRating" value="0" checked="" aria-label="No reviewRating.">
-                                                                                <input type="radio" id="reviewEditRating1" name="reviewRating" <%- review.rating === 1 ? 'checked' : '' %> value="1">
-                                                                                <label for="reviewEditRating1" title="Terrible">1 star</label>
-                                                                                <input type="radio" id="reviewEditRating2" name="reviewRating" <%- review.rating === 2 ? 'checked' : '' %> value="2">
-                                                                                <label for="reviewEditRating2" title="Not good">2 stars</label>
-                                                                                <input type="radio" id="reviewEditRating3" name="reviewRating" <%- review.rating === 3 ? 'checked' : '' %> value="3">
-                                                                                <label for="reviewEditRating3" title="Average">3 stars</label>
-                                                                                <input type="radio" id="reviewEditRating4" name="reviewRating" <%- review.rating === 4 ? 'checked' : '' %> value="4">
-                                                                                <label for="reviewEditRating4" title="Very good">4 stars</label>
-                                                                                <input type="radio" id="reviewEditRating5" name="reviewRating" <%- review.rating === 5 ? 'checked' : '' %> value="5">
-                                                                                <label for="reviewEditRating5" title="Amazing">5 stars</label>
-                                                                            </fieldset>
-                                                                            <textarea name="reviewBody" placeholder="What do you think of this product?" class="outline-none border border-blue-400 resize-none resize-y w-60 px-2 py-2"><%= review.body %></textarea>
-                                                                            <input type="text" name="productId" value="<%= review.productId %>" hidden="">
-                                                                            <button type="submit" class="px-4 bg-gray-100 py-2 rounded-lg text-indigo-500 hover:bg-gray-200 mt-2 hover:text-indigo-400 mr-2">Cập nhật</button>
-                                                                        </form>
-                                                                    </p>
-                                                                    <!--Footer-->
-                                                                    <div class="flex justify-end pt-2">
-                                                                        <button class="editReviewModal modal-close px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400">Hủy</button>
-                                                                    </div>
-                                                                    <script>
-                                                                        document.querySelector('form[name="editreview<%= review.id %>"]').addEventListener('submit', e => {
-                                                                                                e.preventDefault();
-                                                                                                const reviewBody = document.querySelector('form[name="editreview<%= review.id %>"]').reviewBody.value;
-                                                                                                const reviewRating = document.querySelector('form[name="editreview<%= review.id %>"]').reviewRating.value;
-    
-                                                                                                $.asyncForm({
-                                                                                                    action: '/products/<%= review.productId %>/reviews/<%= review.id %>?_method=PUT',                                
-                                                                                                    method: 'post',
-                                                                                                    params: {
-                                                                                                        reviewRating,
-                                                                                                        reviewBody,
-                                                                                                    },
-                                                                                                    onLoadFinished: function(response) {
-                                                                                                        document.querySelector(`div[data-id="<%= review.id %>"] div.flex.flex-col div.flex.justify-start span`).textContent = 'đã vote ' + reviewRating + ' sao ';
-                                                                                                        document.querySelector(`div[data-id="<%= review.id %>"] div.flex.flex-col div.text-gray-600.break-words`).textContent = reviewBody;
-    
-                                                                                                        const currentShowUp = document.querySelector('.modal.showing');
-                                                                                                        currentShowUp.classList.add('opacity-0');
-                                                                                                        currentShowUp.classList.add('pointer-events-none');
-                                                                                                        currentShowUp.classList.remove('showing');
-                                                                                                    }
-                                                                                                })
-                                                                                            })
-                                                                    </script>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!--END OF MODAL EDIT REVIEW-->
-                                                    <% } %>
-                                                </div>
-                                                <div class="max-w-sm text-gray-600 break-words"><%= review.body %></div>
-                                            </div>
-                                        </div>
-                                    <% }); %>
-                                <% } %>
+                            <div>
+                                <form action="/products/<%= product.id %>/reviews" method="POST" name="formCreateReview" enctype="multipart/form-data" class="flex flex-col items-start">
+                                    <fieldset class="starability-fade" style="margin-top: 20px;">
+                                        <input type="radio" id="reviewCreateRating0" class="input-no-rate" name="reviewRating" value="0" checked aria-label="No reviewRating." />
+                                        <input type="radio" id="reviewCreateRating1" name="reviewRating" value="1" />
+                                        <label for="reviewCreateRating1" title="Terrible">1 star</label>
+                                        <input type="radio" id="reviewCreateRating2" name="reviewRating" value="2" />
+                                        <label for="reviewCreateRating2" title="Not good">2 stars</label>
+                                        <input type="radio" id="reviewCreateRating3" name="reviewRating" value="3" />
+                                        <label for="reviewCreateRating3" title="Average">3 stars</label>
+                                        <input type="radio" id="reviewCreateRating4" name="reviewRating" value="4" />
+                                        <label for="reviewCreateRating4" title="Very good">4 stars</label>
+                                        <input type="radio" id="reviewCreateRating5" name="reviewRating" value="5" />
+                                        <label for="reviewCreateRating5" title="Amazing">5 stars</label>
+                                    </fieldset>
+                                    <textarea name="reviewBody" placeholder="Review sản phẩm này" class="outline-none border border-blue-400 resize-none resize-y w-60 px-2 py-2"></textarea>
+                                    <input type="text" name="productId" value="<%= product.id %>" hidden />
+                                    <button type="submit" class="mt-3 px-5 py-2 bg-blue-200 transition-all duration-200 hover:bg-blue-300 rounded-md shadow-sm">Đăng review</button>
+                                </form>
                             </div>
-                            <% if (reviewsPaginate.docs && reviewsPaginate.docs.length) { %>
-                                <div class="REVIEW-LIST PAGINATE">
-                                    <nav class="pt-5 flex justify-center">
-                                        <ul class="reviews-pagination flex justify-start">
-                                            <% if (reviewsPaginate.page > 1) { %>
-                                                <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products/<%= product.id %>?reviews_page=<%= reviewsPaginate.page - 1 %>">Previous</a></li>
-                                            <% } else { %>
-                                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
-                                            <% } %>
-                                
-                                            <% if (reviewsPaginate.page > 4) { %>
-                                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
-                                            <% } %>
-                                
-                                            <% for(let i = reviewsPaginate.page <= 3 ? 1 : reviewsPaginate.page - 3 ; i <= (reviewsPaginate.page + 3 > reviewsPaginate.totalPages ? reviewsPaginate.totalPages : reviewsPaginate.page + 3); i++) { %>
-                                                <li class="<%- reviewsPaginate.page === i ? 'paginate-item-active' : '' %>"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products/<%= product.id %>?reviews_page=<%= i %>"><%= i %></a></li>
-                                            <% } %>
-                                            
-                                            <% if (reviewsPaginate.page <= reviewsPaginate.totalPages - 4) { %>
-                                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
-                                            <% } %>
-                                
-                                            <% if (reviewsPaginate.page < reviewsPaginate.totalPages) { %>
-                                                <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products/<%= product.id %>?reviews_page=<%= reviewsPaginate.page + 1 %>">Next</a></li>
-                                            <% } else { %>
-                                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
-                                            <% } %>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            <% } %>
                         <% } %>
                     </div>
-                </div>
-                <div class="w-full lg:w-4/12 border-gray-300 border border-b-0 border-l-0 border-r-0 lg:border-0 mt-5 lg:mt-0 pt-5 lg:pt-0">
-                    <div class="pb-5 pl-0 lg:pl-4 ">
-                        <i class="far fa-user-tag text-lg font-bold mr-2 text-blue-500"></i>
-                        <span class="text-sm text-blue-500">Thông tin người bán</span>
-                    </div>
-                    <div class="pl-0 lg:pl-4 flex justify-start">
-                        <div>
-                            <img class="w-14 h-14 rounded-full object-cover" alt="Hình đại diện của @<%= product.seller.username %> trên Marketplace" src="<%= product.seller.image.secure_url %>" />
-                        </div>
-                        <div class="px-3">
-                            <h2 class="leading-3 text-gray-700">@<%= product.seller.username %></h2>
-                            <a href="/user/profile/<%= product.seller.username %>" class="font-semibold text-sm py-1 italic hover-full-w-underline text-blue-700 inline-block">Xem trang cá nhân</a>
-                        </div>
-                    </div>
-                    <div class="mt-5 pl-0 lg:pl-4">
-                        <!-- <div class="mb-5">
-                            <button class="bg-green-500 rounded-md text-white px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-green-600">
-                                <span>
-                                    <i class="far fa-mobile-alt mr-2"></i>
-                                    <span class="font-semibold">****</span>
-                                </span>
-                                <span>Bấm để hiện số</span>
-                            </button>
-                        </div> -->
-                        <div class="mb-5">
-                            <button class="show-seller-email border border-blue-500 rounded-md text-blue-600 px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-blue-600 hover:text-white">
-                                <span>
-                                    <i class="fal fa-envelope mr-2"></i>
-                                    <span class="font-semibold seller-email-hide">***@gmail.com</span>
-                                    <span class="font-semibold seller-email-show hidden"><%= product.seller.email %></span>
-                                </span>
-                                <span class="show-email">Bấm để hiện email</span>
-                            </button>
-                            <script>
-                                const showSellerEmail = document.querySelector('.show-seller-email');
-                                showSellerEmail.addEventListener('click', e => {
-                                    document.querySelector('.seller-email-hide').classList.toggle('hidden');
-                                    document.querySelector('.seller-email-show').classList.toggle('hidden');
-                                    document.querySelector('.show-email').textContent === 'Bấm để hiện email' ? document.querySelector('.show-email').textContent = 'Ẩn email' : document.querySelector('.show-email').textContent = 'Bấm để hiện email';
-                                })
-                            </script>
-                        </div>
-                        <div class="mb-5">
-                            <div class="p-3 flex justify-start bg-red-100 rounded items-center border-l-2 border-red-500">
-                                <i class="fad fa-exclamation-circle mr-2 text-red-600 text-3xl"></i>
-                                <span class="text-red-600">Lưu ý: Không nên chuyển tiền trước khi nhận hàng!</span>
+                    <div class="text-gray-500 py-3">
+                        <i class="far fa-tasks text-lg font-bold mr-2 text-blue-500"></i>
+                        <span class="text-sm text-blue-500">Người khác nghĩ gì?</span>
+                        <% if (!currentUser) { %>
+                            <div class="text-center text-gray-500 py-2">
+                                <a href="/user/login?_continue=http://localhost:3000/products/<%= product._id %>" class="text-blue-500 hover:underline">Đăng nhập</a> để xem các review sản phẩm
                             </div>
-                        </div>
-                        <div>
-                            <div class="p-3 flex justify-start bg-green-100 rounded items-center border-l-2 border-green-500">
-                                <i class="fad fa-check-circle mr-2 text-green-600 text-3xl"></i>
-                                <span class="text-green-600">Giao dịch, đừng giao ‘dịch’. Mua bán trong thời điểm này, bạn nhớ làm theo khuyến cáo 5k của Bộ Y Tế: “Khẩu trang – Khử khuẩn – Khoảng cách – Không tập trung – Khai báo y tế” để đảm bảo an toàn cho bản thân, gia đình và cộng đồng nhé!</span>
-                            </div>
-                        </div>
+                        <% } %>
                     </div>
-                    <% if (currentUser && product.seller.equals(currentUser._id)) { %>
-                        <div class="pb-5 pl-0 lg:pl-4 mt-5">
-                            <i class="fad fa-box text-lg font-bold mr-2 text-blue-500"></i>
-                            <span class="text-sm text-blue-500">Tùy chọn sản phẩm</span>
-                        </div>
-                        <div class="mb-5 pl-0 lg:pl-4">
-                            <a href="/products/<%= product._id %>/edit" class="bg-gray-400 rounded-md text-white px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-gray-500">
-                                Chỉnh sửa sản phẩm
-                            </a>
-                        </div>
-                        <div class="mb-5 pl-0 lg:pl-4">
-                            <button class="deleteProductButton bg-red-500 rounded-md text-white px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-red-600">
-                                Xóa sản phẩm
-                            </button>
-                            <div class="hidden modalConfirmDeleteProduct fixed w-full h-full top-0 left-0 flex items-center justify-center">
-                                <div class="deleteProductClose absolute w-full h-full bg-gray-900 opacity-50"></div>
-                                <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
-                                    <div class="modal-content py-4 text-left px-6">
-                                        <div class="flex justify-between items-center pb-3">
-                                            <p class="text-2xl font-bold">Xóa sản phẩm này?</p>
-                                            <div class="deleteProductClose cursor-pointer z-50"><i class="far fa-times"></i></div>
+                    <% if (currentUser) { %>
+                        <div class="reviews-list">
+                            <% if (reviewsPaginate.docs && reviewsPaginate.docs.length) { %>
+                                <% reviewsPaginate.docs.forEach(function(review) { %>
+                                    <div class="REVIEWITEM py-2 pb-3 flex justify-start items-center" data-id="<%= currentUser && review.creator.equals(currentUser._id) && review.id %>" >
+                                        <div class="self-start">
+                                            <img class="w-11 h-11 rounded-full object-cover" src="<%= review.creator.image.secure_url %>" alt="user review" />
                                         </div>
-                                        <p>Hành động này sẽ xóa vĩnh viễn và không thể khôi phục!</p>
-                                        <div class="flex justify-end pt-2">
-                                            <form action="/products/<%= product.id %>/delete?_method=DELETE" method="POST" class="mr-2">
-                                                <button type="submit" class="px-4 bg-gray-400 p-3 rounded-lg text-white hover:bg-gray-500">Xóa</button>
-                                            </form>
-                                            <button class="deleteProductClose px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400">Hủy</button>
+                                        <div class="ml-3 flex flex-col items-start">
+                                            <div class="flex justify-start items-center flex-wrap">
+                                                <h4 class="inline font-bold text-gray-700 rounded-sm ">@<%= review.creator.username %></h4>
+                                                <span class="text-gray-500 px-1">đã vote <%= review.rating %> sao</span>
+                                                <span>
+                                                    <% for (let s = 0; s < review.rating; s++) { %>
+                                                        <i class="fas fa-star text-yellow-400"></i>
+                                                    <% } %>
+                                                </span>
+                                                <% if (currentUser && review.creator.equals(currentUser._id)) { %>
+                                                    <!--MODAL DELETE REVIEW-->
+                                                    <button id="deleteReviewModal" class="modal-open bg-red-200 px-2 text-red-600 rounded-sm transition-all duration-200 hover:bg-red-300 hover:text-red-700 ml-2 shadow-sm">Xóa review</button>
+                                                    <div class="modal deleteReviewModal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+                                                        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+                                                        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                                                            <div class="modal-content py-4 text-left px-6">
+                                                                <!--Title-->
+                                                                <div class="flex justify-between items-center pb-3">
+                                                                    <p class="text-2xl font-bold">Xóa review này?</p>
+                                                                    <div class="deleteReviewModal modal-close cursor-pointer z-50"><i class="far fa-times"></i></div>
+                                                                </div>
+                                                                <!--Body-->
+                                                                <p>Hành động này sẽ xóa vĩnh viễn và không thể khôi phục!</p>
+                                                                <!--Footer-->
+                                                                <div class="flex justify-end pt-2">
+                                                                    <form action="/products/<%= review.productId %>/reviews/<%= review.id %>?_method=DELETE" name="<%= review.id %>" method="POST">
+                                                                        <button type="submit" class="px-4 bg-transparent p-3 rounded-lg text-indigo-500 hover:bg-gray-100 hover:text-indigo-400 mr-2">Xóa</button>
+                                                                    </form>
+                                                                    <button class="deleteReviewModal modal-close px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400">Close</button>
+                                                                </div>
+                                                                <script>
+                                                                    document.querySelector('form[name="<%= review.id %>"]').addEventListener('submit', e => {
+                                                                        e.preventDefault()
+                                            
+                                                                        $.asyncForm({
+                                                                            action: '/products/<%= review.productId %>/reviews/<%= review.id %>?_method=DELETE',                                
+                                                                            method: 'post',
+                                                                            
+                                                                            onLoadFinished: function(response) {
+                                                                                e.preventDefault();
+                                                                                document.querySelector('div[data-id="<%= review.id %>"]').remove();
+                                                                            }
+                                                                        })
+                                                                    })
+                                                                </script>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--END OF MODAL DELETE REVIEW-->
+            
+                                                    <!--MODAL EDIT REVIEW-->
+                                                    <button id="editReviewModal" class="modal-open bg-purple-200 px-2 text-purple-600 rounded-sm transition-all duration-200 hover:bg-purple-300 hover:text-purple-700 ml-2 shadow-sm">Sửa review</button>
+                                                    <div class="modal editReviewModal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+                                                        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+                                                        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                                                            <div class="modal-content py-4 text-left px-6">
+                                                                <!--Title-->
+                                                                <div class="flex justify-between items-center pb-3">
+                                                                    <p class="text-2xl font-bold">Sửa review</p>
+                                                                    <div class="editReviewModal modal-close cursor-pointer z-50"><i class="far fa-times"></i></div>
+                                                                </div>
+                                                                <!--Body-->
+                                                                <p>
+                                                                    <form action="/products/<%= review.productId %>/reviews/<%= review.id %>?_method=PUT" name="editreview<%= review.id %>" method="POST" class="flex flex-col items-start">
+                                                                        <fieldset class="starability-fade" style="margin-top: 20px;">
+                                                                            <input type="radio" id="reviewEditRating0" class="input-no-rate" name="reviewRating" value="0" checked="" aria-label="No reviewRating.">
+                                                                            <input type="radio" id="reviewEditRating1" name="reviewRating" <%- review.rating === 1 ? 'checked' : '' %> value="1">
+                                                                            <label for="reviewEditRating1" title="Terrible">1 star</label>
+                                                                            <input type="radio" id="reviewEditRating2" name="reviewRating" <%- review.rating === 2 ? 'checked' : '' %> value="2">
+                                                                            <label for="reviewEditRating2" title="Not good">2 stars</label>
+                                                                            <input type="radio" id="reviewEditRating3" name="reviewRating" <%- review.rating === 3 ? 'checked' : '' %> value="3">
+                                                                            <label for="reviewEditRating3" title="Average">3 stars</label>
+                                                                            <input type="radio" id="reviewEditRating4" name="reviewRating" <%- review.rating === 4 ? 'checked' : '' %> value="4">
+                                                                            <label for="reviewEditRating4" title="Very good">4 stars</label>
+                                                                            <input type="radio" id="reviewEditRating5" name="reviewRating" <%- review.rating === 5 ? 'checked' : '' %> value="5">
+                                                                            <label for="reviewEditRating5" title="Amazing">5 stars</label>
+                                                                        </fieldset>
+                                                                        <textarea name="reviewBody" placeholder="What do you think of this product?" class="outline-none border border-blue-400 resize-none resize-y w-60 px-2 py-2"><%= review.body %></textarea>
+                                                                        <input type="text" name="productId" value="<%= review.productId %>" hidden="">
+                                                                        <button type="submit" class="px-4 bg-gray-100 py-2 rounded-lg text-indigo-500 hover:bg-gray-200 mt-2 hover:text-indigo-400 mr-2">Cập nhật</button>
+                                                                    </form>
+                                                                </p>
+                                                                <!--Footer-->
+                                                                <div class="flex justify-end pt-2">
+                                                                    <button class="editReviewModal modal-close px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400">Hủy</button>
+                                                                </div>
+                                                                <script>
+                                                                    document.querySelector('form[name="editreview<%= review.id %>"]').addEventListener('submit', e => {
+                                                                                            e.preventDefault();
+                                                                                            const reviewBody = document.querySelector('form[name="editreview<%= review.id %>"]').reviewBody.value;
+                                                                                            const reviewRating = document.querySelector('form[name="editreview<%= review.id %>"]').reviewRating.value;
+
+                                                                                            $.asyncForm({
+                                                                                                action: '/products/<%= review.productId %>/reviews/<%= review.id %>?_method=PUT',                                
+                                                                                                method: 'post',
+                                                                                                params: {
+                                                                                                    reviewRating,
+                                                                                                    reviewBody,
+                                                                                                },
+                                                                                                onLoadFinished: function(response) {
+                                                                                                    document.querySelector(`div[data-id="<%= review.id %>"] div.flex.flex-col div.flex.justify-start span`).textContent = 'đã vote ' + reviewRating + ' sao ';
+                                                                                                    document.querySelector(`div[data-id="<%= review.id %>"] div.flex.flex-col div.text-gray-600.break-words`).textContent = reviewBody;
+
+                                                                                                    const currentShowUp = document.querySelector('.modal.showing');
+                                                                                                    currentShowUp.classList.add('opacity-0');
+                                                                                                    currentShowUp.classList.add('pointer-events-none');
+                                                                                                    currentShowUp.classList.remove('showing');
+                                                                                                }
+                                                                                            })
+                                                                                        })
+                                                                </script>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--END OF MODAL EDIT REVIEW-->
+                                                <% } %>
+                                            </div>
+                                            <div class="max-w-sm text-gray-600 break-words"><%= review.body %></div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <script>
-                                const deleteProductButton = document.querySelector('.deleteProductButton');
-                                const modalConfirmDeleteProduct = document.querySelector('.modalConfirmDeleteProduct');
-                                const deleteProductCloses = document.querySelectorAll('.deleteProductClose');
-
-                                deleteProductButton.addEventListener('click', () => modalConfirmDeleteProduct.classList.remove('hidden'));
-                                deleteProductCloses.forEach(deleteProductClose => {
-                                    deleteProductClose.addEventListener('click', () => modalConfirmDeleteProduct.classList.add('hidden'));
-                                })
-                            </script>
+                                <% }); %>
+                            <% } %>
                         </div>
+                        <% if (reviewsPaginate.docs && reviewsPaginate.docs.length) { %>
+                            <div class="REVIEW-LIST PAGINATE">
+                                <nav class="pt-5 flex justify-center">
+                                    <ul class="reviews-pagination flex justify-start">
+                                        <% if (reviewsPaginate.page > 1) { %>
+                                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products/<%= product.id %>?reviews_page=<%= reviewsPaginate.page - 1 %>">Previous</a></li>
+                                        <% } else { %>
+                                            <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
+                                        <% } %>
+                            
+                                        <% if (reviewsPaginate.page > 4) { %>
+                                            <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                                        <% } %>
+                            
+                                        <% for(let i = reviewsPaginate.page <= 3 ? 1 : reviewsPaginate.page - 3 ; i <= (reviewsPaginate.page + 3 > reviewsPaginate.totalPages ? reviewsPaginate.totalPages : reviewsPaginate.page + 3); i++) { %>
+                                            <li class="<%- reviewsPaginate.page === i ? 'paginate-item-active' : '' %>"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products/<%= product.id %>?reviews_page=<%= i %>"><%= i %></a></li>
+                                        <% } %>
+                                        
+                                        <% if (reviewsPaginate.page <= reviewsPaginate.totalPages - 4) { %>
+                                            <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                                        <% } %>
+                            
+                                        <% if (reviewsPaginate.page < reviewsPaginate.totalPages) { %>
+                                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products/<%= product.id %>?reviews_page=<%= reviewsPaginate.page + 1 %>">Next</a></li>
+                                        <% } else { %>
+                                            <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
+                                        <% } %>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <% } %>
                     <% } %>
                 </div>
             </div>
+            <div class="w-full lg:w-4/12 border-gray-300 border border-b-0 border-l-0 border-r-0 lg:border-0 mt-5 lg:mt-0 pt-5 lg:pt-0">
+                <div class="pb-5 pl-0 lg:pl-4 ">
+                    <i class="far fa-user-tag text-lg font-bold mr-2 text-blue-500"></i>
+                    <span class="text-sm text-blue-500">Thông tin người bán</span>
+                </div>
+                <div class="pl-0 lg:pl-4 flex justify-start">
+                    <div>
+                        <img class="w-14 h-14 rounded-full object-cover" alt="Hình đại diện của @<%= product.seller.username %> trên Marketplace" src="<%= product.seller.image.secure_url %>" />
+                    </div>
+                    <div class="px-3">
+                        <h2 class="leading-3 text-gray-700">@<%= product.seller.username %></h2>
+                        <a href="/user/profile/<%= product.seller.username %>" class="font-semibold text-sm py-1 italic hover-full-w-underline text-blue-700 inline-block">Xem trang cá nhân</a>
+                    </div>
+                </div>
+                <div class="mt-5 pl-0 lg:pl-4">
+                    <!-- <div class="mb-5">
+                        <button class="bg-green-500 rounded-md text-white px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-green-600">
+                            <span>
+                                <i class="far fa-mobile-alt mr-2"></i>
+                                <span class="font-semibold">****</span>
+                            </span>
+                            <span>Bấm để hiện số</span>
+                        </button>
+                    </div> -->
+                    <div class="mb-5">
+                        <button class="show-seller-email border border-blue-500 rounded-md text-blue-600 px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-blue-600 hover:text-white">
+                            <span>
+                                <i class="fal fa-envelope mr-2"></i>
+                                <span class="font-semibold seller-email-hide">***@gmail.com</span>
+                                <span class="font-semibold seller-email-show hidden"><%= product.seller.email %></span>
+                            </span>
+                            <span class="show-email">Bấm để hiện email</span>
+                        </button>
+                        <script>
+                            const showSellerEmail = document.querySelector('.show-seller-email');
+                            showSellerEmail.addEventListener('click', e => {
+                                document.querySelector('.seller-email-hide').classList.toggle('hidden');
+                                document.querySelector('.seller-email-show').classList.toggle('hidden');
+                                document.querySelector('.show-email').textContent === 'Bấm để hiện email' ? document.querySelector('.show-email').textContent = 'Ẩn email' : document.querySelector('.show-email').textContent = 'Bấm để hiện email';
+                            })
+                        </script>
+                    </div>
+                    <div class="mb-5">
+                        <div class="p-3 flex justify-start bg-red-100 rounded items-center border-l-2 border-red-500">
+                            <i class="fad fa-exclamation-circle mr-2 text-red-600 text-3xl"></i>
+                            <span class="text-red-600">Lưu ý: Không nên chuyển tiền trước khi nhận hàng!</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="p-3 flex justify-start bg-green-100 rounded items-center border-l-2 border-green-500">
+                            <i class="fad fa-check-circle mr-2 text-green-600 text-3xl"></i>
+                            <span class="text-green-600">Giao dịch, đừng giao ‘dịch’. Mua bán trong thời điểm này, bạn nhớ làm theo khuyến cáo 5k của Bộ Y Tế: “Khẩu trang – Khử khuẩn – Khoảng cách – Không tập trung – Khai báo y tế” để đảm bảo an toàn cho bản thân, gia đình và cộng đồng nhé!</span>
+                        </div>
+                    </div>
+                </div>
+                <% if (currentUser && product.seller.equals(currentUser._id)) { %>
+                    <div class="pb-5 pl-0 lg:pl-4 mt-5">
+                        <i class="fad fa-box text-lg font-bold mr-2 text-blue-500"></i>
+                        <span class="text-sm text-blue-500">Tùy chọn sản phẩm</span>
+                    </div>
+                    <div class="mb-5 pl-0 lg:pl-4">
+                        <a href="/products/<%= product._id %>/edit" class="bg-gray-400 rounded-md text-white px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-gray-500">
+                            Chỉnh sửa sản phẩm
+                        </a>
+                    </div>
+                    <div class="mb-5 pl-0 lg:pl-4">
+                        <button class="deleteProductButton bg-red-500 rounded-md text-white px-5 py-3 flex justify-between items-center w-full transition-all duration-300 hover:bg-red-600">
+                            Xóa sản phẩm
+                        </button>
+                        <div class="hidden modalConfirmDeleteProduct fixed w-full h-full top-0 left-0 flex items-center justify-center">
+                            <div class="deleteProductClose absolute w-full h-full bg-gray-900 opacity-50"></div>
+                            <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                                <div class="modal-content py-4 text-left px-6">
+                                    <div class="flex justify-between items-center pb-3">
+                                        <p class="text-2xl font-bold">Xóa sản phẩm này?</p>
+                                        <div class="deleteProductClose cursor-pointer z-50"><i class="far fa-times"></i></div>
+                                    </div>
+                                    <p>Hành động này sẽ xóa vĩnh viễn và không thể khôi phục!</p>
+                                    <div class="flex justify-end pt-2">
+                                        <form action="/products/<%= product.id %>/delete?_method=DELETE" method="POST" class="mr-2">
+                                            <button type="submit" class="px-4 bg-gray-400 p-3 rounded-lg text-white hover:bg-gray-500">Xóa</button>
+                                        </form>
+                                        <button class="deleteProductClose px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400">Hủy</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            const deleteProductButton = document.querySelector('.deleteProductButton');
+                            const modalConfirmDeleteProduct = document.querySelector('.modalConfirmDeleteProduct');
+                            const deleteProductCloses = document.querySelectorAll('.deleteProductClose');
+
+                            deleteProductButton.addEventListener('click', () => modalConfirmDeleteProduct.classList.remove('hidden'));
+                            deleteProductCloses.forEach(deleteProductClose => {
+                                deleteProductClose.addEventListener('click', () => modalConfirmDeleteProduct.classList.add('hidden'));
+                            })
+                        </script>
+                    </div>
+                <% } %>
+            </div>
         </div>
     </div>
-    <footer class="bg-white pb-10">
-        <div class="container mx-auto md:px-20 px-10 mt-2 pt-8 flex justify-start flex-wrap">
-            <div class="w-full md:w-4/12 lg:w-6/12 mb-5 md:mb-0">
-                <h2><a href="/" class="font-bold text-xl mb-1">Marketplace</a></h2>
-                <p class="text-gray-500 break-words">Marketplace - Trung gian mua sắm của bạn</p>
-            </div>
-            <div class="w-full md:w-4/12 lg:w-3/12 mb-5 md:mb-0">
-                <h3 class="font-semibold text-md">Hỗ trợ khách hàng</h3>
-                <ul>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Trợ giúp</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Cách đăng sản phẩm</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Liên hệ</a></li>
-                </ul>
-            </div>
-            <div class="w-full md:w-4/12 lg:w-3/12">
-                <h3 class="font-semibold text-md">Về Marketplace</h3>
-                <ul>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Giới thiệu</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Truyền thông</a></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
 </div>
 <script>
     var slideIndex = 1;
@@ -720,31 +672,3 @@
         }, 2000);
     })
 </script>
-
-<!--END OF HTML -->
-
-<!-- <div>
-    <% if (currentUser && product.seller.equals(currentUser._id)) { %>
-        <a href="/products/<%= product.id %>/edit">Edit this product</a>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteProductConfirmationModal">
-            Delete this product
-        </button>
-        <div class="modal fade" id="deleteProductConfirmationModal" tabindex="-1" aria-labelledby="deleteProductConfirmationModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteProductConfirmationModalLabel">Delete Confirmation</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">Permanently delete this product?</div>
-                    <div class="modal-footer">
-                        <form action="/products/<%= product.id %>/delete?_method=DELETE" method="POST">
-                            <button type="submit" class="btn btn-primary">Delete</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <% } %>
-</div> -->

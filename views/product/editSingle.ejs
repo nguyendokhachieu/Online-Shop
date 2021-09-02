@@ -1,188 +1,141 @@
 <% layout('layouts/boilerplate') -%>
 
-<div class="body-wrapper">
-    <header class="bg-indigo-500 shadow-md fixed top-0 left-0 z-10 w-full">
-        <div class="container mx-auto md:px-20 px-10 pb-2 flex justify-between items-center">
-            <div class="page-logo text-white text-2xl py-2">
-                <a href="/">Marketplace</a>
-            </div>
-            <div class="top-nav-buttons text-white">
-                <ul class="flex">
-                    <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-home md:mr-2"></i><span class="md:inline hidden">Trang chủ</span></a></li>
-                    <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-list-alt md:mr-2"></i><span class="md:inline hidden">Quản lý sản phẩm</span></a></li>
-                </ul>
-            </div>
+<div class="container mx-auto md:px-20 px-10 mt-32">
+    <div class="shadow p-5 rounded-md bg-white mb-4 mt-1">
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold inline"><i class="fad fa-pen text-indigo-600 font-light mr-2"></i><span class="underline-shadow">Chỉnh sửa sản phẩm</span></h2>
         </div>
-        <div class="container mx-auto md:px-20 px-10 flex justify-between items-center pb-3 flex-col lg:flex-row">
-            <form action="#" class="lg:w-2/3 w-full lg:mb-0 mb-2">
-                <input type="search" class="px-4 py-2 outline-none rounded-md w-full shadow-md" placeholder="Tìm kiếm sản phẩm, địa điểm, giá cả, ...">
-                <button type="submit" class="hidden">Tìm kiếm</button>
-            </form>
-            <div class="text-right">
-                <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-user mr-2"></i><span>Đăng nhập</span></button>
-                <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-plus-square mr-2"></i><span>Đăng tin</span></button>
-            </div>
+        <% if (errorMsg) { %>
+        <div class="p-3 flex justify-start bg-red-100 rounded items-center border-l-2 border-red-500">
+            <i class="far fa-exclamation-circle mr-2 text-red-600 text-3xl"></i>
+            <span class="text-red-600"><%= errorMsg %></span>
         </div>
-    </header>
-    <div class="container mx-auto md:px-20 px-10 mt-32">
-        <div class="shadow p-5 rounded-md bg-white mb-4 mt-1">
-            <div class="mb-4">
-                <h2 class="text-xl font-semibold inline"><i class="fad fa-pen text-indigo-600 font-light mr-2"></i><span class="underline-shadow">Chỉnh sửa sản phẩm</span></h2>
-            </div>
-            <% if (errorMsg) { %>
-            <div class="p-3 flex justify-start bg-red-100 rounded items-center border-l-2 border-red-500">
-                <i class="far fa-exclamation-circle mr-2 text-red-600 text-3xl"></i>
-                <span class="text-red-600"><%= errorMsg %></span>
-            </div>
-            <% } %>
-            <div>
-                <form action="/products/<%= product.id %>/edit?_method=PUT" method="POST" enctype="multipart/form-data" name="editSingle">
-                    <div>
-                        <label for="title" class="text-md text-indigo-500">Tên sản phẩm</label>
-                    </div>
-                    <div class="pb-5 pt-2">
-                        <input type="text" name="title" id="title" placeholder="Tên sản phẩm" value="<%= product.title %>" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500" />
-                    </div>
-                    <div>
-                        <label for="price" class="text-md text-indigo-500">Giá sản phẩm</label>
-                    </div>
-                    <div class="pb-5 pt-2">
-                        <input type="number" name="price" id="price" min="0" step="1000" value="<%= product.price %>" placeholder="Giá (VND)" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500" />
-                    </div>
-                    <div>
-                        <label for="editor" class="text-md text-indigo-500">Mô tả sản phẩm</label>
-                    </div>
-                    <div class="pb-5 pt-2">
-                        <textarea name="description" hidden></textarea>
-                        <div id="editor"><%- product.description %></div>
-                    </div>
-                    <div>
-                        <label class="text-md text-indigo-500">Địa điểm</label>
-                    </div>
-                    <div class="pb-5 pt-2 text-gray-500"><i class="far fa-map-marker-alt mr-2"></i> <%- product.location.ward.split('-')[1] %>, <%- product.location.district.split('-')[1] %>, <%- product.location.province.split('-')[1] %></div>
-                    <div>
-                        <label for="province" class="text-md text-indigo-500">Tỉnh / thành phố</label>
-                    </div>
-                    <div class="pb-5 pt-2">
-                        <select id="province" name="province" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500">
-                            <option data-uid="0" value="0">Chọn tỉnh / thành phố</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="district" class="text-md text-indigo-500">Quận / huyện / thị xã</label>
-                    </div>
-                    <div class="pb-5 pt-2">
-                        <select id="district" name="district" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500">
-                            <option data-uid="0" value="0">Chọn quận / huyện / thị xã</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="ward" class="text-md text-indigo-500">Xã / phường / thị trấn</label>
-                    </div>
-                    <div class="pb-5 pt-2">
-                        <select id="ward" name="ward" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500">
-                            <option data-uid="0" value="0">Chọn xã / phường / thị trấn</option>
-                        </select>
-                    </div>    
-                    <div>
-                        <label class="text-md text-indigo-500">Đã tải lên <%= product.images.length %> hình ảnh</label>
-                    </div>
-                    <div class="pb-5 pt-2 flex justify-start flex-wrap">
-                        <% if (product.images && product.images.length) { %>
-                            <% product.images.forEach(function(image, index) { %>
-                                <div class="img-wrap-<%= index %> border border-indigo-400 px-3 py-4 mr-2 rounded flex flex-col items-center justify-center">
-                                    <img src="<%= image.secure_url %>" alt="c" width="100px" height="100px" class="current-images" />
-                                    <label class="pt-2 flex justify-start items-center">
-                                        <span class="mr-2 text-gray-500">Xóa hình này?</span>
-                                        <input type="checkbox" class="deleted-images img-checkbox-<%= index %>" name="deletedImages[]" value="<%= image.public_id %>" />
-                                    </label>
-                                </div>
-                                <script>
-                                    document.querySelector(`.img-checkbox-<%= index %>`).addEventListener('change', e => {
-                                        if (e.target.checked) {
-                                            document.querySelector(`.img-wrap-<%= index %>`).classList.remove('border-indigo-400');
-                                            document.querySelector(`.img-wrap-<%= index %>`).classList.add('border-red-400');
-                                            document.querySelector(`.img-wrap-<%= index %>`).classList.add('bg-red-50');
-                                        } else {
-                                            document.querySelector(`.img-wrap-<%= index %>`).classList.add('border-indigo-400');
-                                            document.querySelector(`.img-wrap-<%= index %>`).classList.remove('border-red-400');
-                                            document.querySelector(`.img-wrap-<%= index %>`).classList.remove('bg-red-50');
-                                        }
-                                    })
-                                </script>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="text-red-500">Bạn chưa tải lên ảnh nào. Bạn có thể tải lên tối đa 4 hình ảnh cho sản phẩm, giúp người mua dễ lựa chọn hơn</div>
-                        <% } %>
-                    </div>
-                    <div class="pb-4 pt-5">
-                        <label class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500 inline-block cursor-pointer">
-                            <i class="fad fa-file-upload mr-2 text-blue-500 text-lg"></i>
-                            Tải hình ảnh lên (tối đa 4 hình ảnh)
-                            <input type="file" name="images" multiple hidden accept="image/*" />
-                        </label>
-                        <div class="pt-2">
-                            <label class="text-md text-indigo-500 new-img-upload-count">Đã chọn 0 hình ảnh</label>
-                        </div>
-                        <div class="pt-2 imgs-preview flex justify-start items-center">
-                            
-                        </div>
-                        <script>
-                            const newImgCount = document.querySelector('.new-img-upload-count');
-                            const imgUpload = document.querySelector('input[name="images"]');
-                            const imgsPreview = document.querySelector('.imgs-preview');
-
-                            imgUpload.addEventListener('change', evt => {
-                                const files = imgUpload.files;
-                                const filesLen = files.length || 0;
-
-                                newImgCount.textContent = `Đã chọn ${filesLen} hình ảnh`;
-
-                                if (files && files.length) {
-                                    for (const imgItem of files) {
-                                        let imgTag = document.createElement('img');
-                                        imgTag.src = URL.createObjectURL(imgItem);
-                                        imgTag.alt = 'image preview';
-                                        imgTag.width = '100';
-                                        imgTag.height = '100';
-                                        imgTag.classList.add('mr-2');
-                                        imgsPreview.appendChild(imgTag);
+        <% } %>
+        <div>
+            <form action="/products/<%= product.id %>/edit?_method=PUT" method="POST" enctype="multipart/form-data" name="editSingle">
+                <div>
+                    <label for="title" class="text-md text-indigo-500">Tên sản phẩm</label>
+                </div>
+                <div class="pb-5 pt-2">
+                    <input type="text" name="title" id="title" placeholder="Tên sản phẩm" value="<%= product.title %>" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500" />
+                </div>
+                <div>
+                    <label for="price" class="text-md text-indigo-500">Giá sản phẩm</label>
+                </div>
+                <div class="pb-5 pt-2">
+                    <input type="number" name="price" id="price" min="0" step="1000" value="<%= product.price %>" placeholder="Giá (VND)" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500" />
+                </div>
+                <div>
+                    <label for="editor" class="text-md text-indigo-500">Mô tả sản phẩm</label>
+                </div>
+                <div class="pb-5 pt-2">
+                    <textarea name="description" hidden></textarea>
+                    <div id="editor"><%- product.description %></div>
+                </div>
+                <div>
+                    <label class="text-md text-indigo-500">Địa điểm</label>
+                </div>
+                <div class="pb-5 pt-2 text-gray-500"><i class="far fa-map-marker-alt mr-2"></i> <%- product.location.ward.split('-')[1] %>, <%- product.location.district.split('-')[1] %>, <%- product.location.province.split('-')[1] %></div>
+                <div>
+                    <label for="province" class="text-md text-indigo-500">Tỉnh / thành phố</label>
+                </div>
+                <div class="pb-5 pt-2">
+                    <select id="province" name="province" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500">
+                        <option data-uid="0" value="0">Chọn tỉnh / thành phố</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="district" class="text-md text-indigo-500">Quận / huyện / thị xã</label>
+                </div>
+                <div class="pb-5 pt-2">
+                    <select id="district" name="district" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500">
+                        <option data-uid="0" value="0">Chọn quận / huyện / thị xã</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ward" class="text-md text-indigo-500">Xã / phường / thị trấn</label>
+                </div>
+                <div class="pb-5 pt-2">
+                    <select id="ward" name="ward" class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500">
+                        <option data-uid="0" value="0">Chọn xã / phường / thị trấn</option>
+                    </select>
+                </div>    
+                <div>
+                    <label class="text-md text-indigo-500">Đã tải lên <%= product.images.length %> hình ảnh</label>
+                </div>
+                <div class="pb-5 pt-2 flex justify-start flex-wrap">
+                    <% if (product.images && product.images.length) { %>
+                        <% product.images.forEach(function(image, index) { %>
+                            <div class="img-wrap-<%= index %> border border-indigo-400 px-3 py-4 mr-2 rounded flex flex-col items-center justify-center">
+                                <img src="<%= image.secure_url %>" alt="c" width="100px" height="100px" class="current-images" />
+                                <label class="pt-2 flex justify-start items-center">
+                                    <span class="mr-2 text-gray-500">Xóa hình này?</span>
+                                    <input type="checkbox" class="deleted-images img-checkbox-<%= index %>" name="deletedImages[]" value="<%= image.public_id %>" />
+                                </label>
+                            </div>
+                            <script>
+                                document.querySelector(`.img-checkbox-<%= index %>`).addEventListener('change', e => {
+                                    if (e.target.checked) {
+                                        document.querySelector(`.img-wrap-<%= index %>`).classList.remove('border-indigo-400');
+                                        document.querySelector(`.img-wrap-<%= index %>`).classList.add('border-red-400');
+                                        document.querySelector(`.img-wrap-<%= index %>`).classList.add('bg-red-50');
+                                    } else {
+                                        document.querySelector(`.img-wrap-<%= index %>`).classList.add('border-indigo-400');
+                                        document.querySelector(`.img-wrap-<%= index %>`).classList.remove('border-red-400');
+                                        document.querySelector(`.img-wrap-<%= index %>`).classList.remove('bg-red-50');
                                     }
+                                })
+                            </script>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="text-red-500">Bạn chưa tải lên ảnh nào. Bạn có thể tải lên tối đa 4 hình ảnh cho sản phẩm, giúp người mua dễ lựa chọn hơn</div>
+                    <% } %>
+                </div>
+                <div class="pb-4 pt-5">
+                    <label class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500 inline-block cursor-pointer">
+                        <i class="fad fa-file-upload mr-2 text-blue-500 text-lg"></i>
+                        Tải hình ảnh lên (tối đa 4 hình ảnh)
+                        <input type="file" name="images" multiple hidden accept="image/*" />
+                    </label>
+                    <div class="pt-2">
+                        <label class="text-md text-indigo-500 new-img-upload-count">Đã chọn 0 hình ảnh</label>
+                    </div>
+                    <div class="pt-2 imgs-preview flex justify-start items-center">
+                        
+                    </div>
+                    <script>
+                        const newImgCount = document.querySelector('.new-img-upload-count');
+                        const imgUpload = document.querySelector('input[name="images"]');
+                        const imgsPreview = document.querySelector('.imgs-preview');
+
+                        imgUpload.addEventListener('change', evt => {
+                            const files = imgUpload.files;
+                            const filesLen = files.length || 0;
+
+                            newImgCount.textContent = `Đã chọn ${filesLen} hình ảnh`;
+
+                            if (files && files.length) {
+                                for (const imgItem of files) {
+                                    let imgTag = document.createElement('img');
+                                    imgTag.src = URL.createObjectURL(imgItem);
+                                    imgTag.alt = 'image preview';
+                                    imgTag.width = '100';
+                                    imgTag.height = '100';
+                                    imgTag.classList.add('mr-2');
+                                    imgsPreview.appendChild(imgTag);
                                 }
-                            })
-                        </script>
-                    </div>
-                    <div class="py-5">
-                        <button type="submit" class="mt-2 outline-none px-3 py-2 border bg-pink-600 transition-all duration-200 hover:bg-pink-500 shadow rounded w-full text-lg text-white ">Edit</button>
-                    </div>
-                </form>
-            </div>
+                            }
+                        })
+                    </script>
+                </div>
+                <div class="py-5">
+                    <button type="submit" class="mt-2 outline-none px-3 py-2 border bg-pink-600 transition-all duration-200 hover:bg-pink-500 shadow rounded w-full text-lg text-white ">Edit</button>
+                </div>
+            </form>
         </div>
     </div>
-    <footer class="bg-white pb-10">
-        <div class="container mx-auto md:px-20 px-10 mt-2 pt-8 flex justify-start flex-wrap">
-            <div class="w-full md:w-4/12 lg:w-6/12 mb-5 md:mb-0">
-                <h2><a href="/" class="font-bold text-xl mb-1">Marketplace</a></h2>
-                <p class="text-gray-500 break-words">Marketplace - Trung gian mua sắm của bạn</p>
-            </div>
-            <div class="w-full md:w-4/12 lg:w-3/12 mb-5 md:mb-0">
-                <h3 class="font-semibold text-md">Hỗ trợ khách hàng</h3>
-                <ul>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Trợ giúp</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Cách đăng sản phẩm</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Liên hệ</a></li>
-                </ul>
-            </div>
-            <div class="w-full md:w-4/12 lg:w-3/12">
-                <h3 class="font-semibold text-md">Về Marketplace</h3>
-                <ul>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Giới thiệu</a></li>
-                    <li><a href="#" class="transform transition-all hover:translate-x-1 inline-block py-1 duration-200 text-gray-600"><i class="fas fa-chevron-right mr-2 text-gray-400"></i>Truyền thông</a></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
 </div>
+
 <script>
     const description = document.querySelector('textarea[name="description"]');
     let editor;
