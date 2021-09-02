@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') -%>
 
 <section class="login-section mt-44 lg:mt-32 animate__animated animate__fadeInUp">
-    <div class="container mx-auto md:px-20 px-10 ">
+    <div class="container mx-auto md:px-20 px-10 min-h-screen">
         <div class="w-full md:w-96 mx-auto  rounded-lg shadow-sm py-4 px-5 bg-white">
             <h2 class="merriweather text-2xl text-center pt-3 pb-5">Đăng nhập</h2>
             <% if (errorMsg) { %>
@@ -19,7 +19,7 @@
             <div>
                 <form action="/user/login<%- _continue !== null ? '?_continue=' : '' %><%- _continue !== null ? _continue : '' %>" method="POST" enctype="multipart/form-data" class="w-full">
                     <div class="relative mb-5">
-                        <input type="text" id="username" name="username" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <input type="text" id="username" name="username" autofocus class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
                         <label for="username" class="username-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Username</label>
                     </div>
                     <div class="relative mb-5">

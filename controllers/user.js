@@ -174,7 +174,7 @@ module.exports = {
     async putForgotPassword(req, res, next) {
         try {
             if (req.body.email.trim().length < 6) {
-                req.session.errorMsg = 'Invalid email address, please try again!';
+                req.session.errorMsg = 'Email không hợp lệ, xin vui lòng thử lại!';
                 return res.redirect('/user/forgot_password');
             }
             
@@ -183,7 +183,7 @@ module.exports = {
             });
 
             if (!user) {
-                req.session.errorMsg = 'We cannot find your account! Make sure this is your email, please try again!';
+                req.session.errorMsg = 'Chúng tôi chưa thể tìm được người dùng ứng với email bạn đã điền, xin vui lòng kiểm tra lại!';
                 return res.redirect('/user/forgot_password');
             }
 
@@ -206,10 +206,10 @@ module.exports = {
 
             await sgMail.send(msg);     
             
-            req.session.successMsg = 'An email has been sent to you. Please open your mailbox (make sure to check spams, too) and follow further instructions!';
+            req.session.successMsg = `Một email đã được đến ${req.body.email}. Vui lòng kiểm tra hộp thư đến và spam để xem các hướng dẫn tiếp theo!`;
             return res.redirect('/user/forgot_password');
         } catch (error) {
-            req.session.errorMsg = 'We cannot find your account! Make sure this is your email, please try again!';
+            req.session.errorMsg = 'Chúng tôi chưa thể tìm được người dùng ứng với email bạn đã điền, xin vui lòng kiểm tra lại!';
             return res.redirect('/user/forgot_password');
         }
     },
@@ -223,11 +223,11 @@ module.exports = {
             });
 
             if (!user) {
-                req.session.errorMsg = 'We cannot find your account or your link has expired!';
+                req.session.errorMsg = 'Chúng tôi không thể tìm tài khoản nào hoặc liên kết đã hết hạn!';
                 return res.redirect('/user/forgot_password');
             }
 
-            req.session.successMsg = 'Please type your new password!';
+            req.session.successMsg = '';
             return res.render('user/passwordRecovery', { reset_password_token: req.params.reset_password_token });
         } catch (error) {
             req.session.errorMsg = 'We cannot find your account or your link has expired!';
@@ -243,7 +243,7 @@ module.exports = {
             });
 
             if (!user) {
-                req.session.errorMsg = 'TryWe cannot find your account or your link has expired!';
+                req.session.errorMsg = 'Chúng tôi không thể tìm tài khoản nào hoặc liên kết đã hết hạn!';
                 return res.redirect('/user/forgot_password');
             }
 
@@ -252,12 +252,12 @@ module.exports = {
             await user.save();
 
             if (req.body.password !== req.body.confirmPassword) {
-                req.session.errorMsg = 'Password mismatched! Please try again!';
+                req.session.errorMsg = 'Password không trùng nhau!';
                 return res.redirect('/user/forgot_password');
             }
 
             if (req.body.password.trim().length < 8) {
-                req.session.errorMsg = 'Password has at least 8 characters, excludes any white spaces!';
+                req.session.errorMsg = 'Password có ít nhất 8 ký tự!';
                 return res.redirect('/user/forgot_password');
             }
 
@@ -266,15 +266,15 @@ module.exports = {
 
             req.login(user, function(err) {
                 if (err) {
-                    req.session.errorMsg = 'Some unexpected errors happened while we logged you in! Please try to login again!';
+                    req.session.errorMsg = 'Có lỗi xảy ra, xin vui lòng thử lại!';
                     return res.redirect('/user/login');
                 }
 
-                req.session.successMsg = 'Password changed successfully!';
+                req.session.successMsg = 'Cập nhật mật khẩu thành công!';
                 return res.redirect('/');
             })
         } catch (error) {
-            req.session.errorMsg = 'CatchWe cannot find your account or your link has expired!';
+            req.session.errorMsg = 'Chúng tôi không thể tìm tài khoản nào hoặc liên kết đã hết hạn!';
             return res.redirect('/user/forgot_password');
         }
     },
