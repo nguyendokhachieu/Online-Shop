@@ -23,22 +23,22 @@ module.exports = {
     async postRegister(req, res, next) {
         try {
             if (req.body.email.trim().length < 6) {
-                req.session.errorMsg = 'Invalid email address, please try again!';
+                req.session.errorMsg = 'Email không hợp lệ, xin vui lòng kiểm tra lại!';
                 return res.redirect('/user/register');
             }
 
-            if (req.body.username.trim().length < 8) {
-                req.session.errorMsg = 'Username requires at least 8 characters. Please choose another!';
+            if (req.body.username.trim().length < 8 || req.body.username.trim().length > 32) {
+                req.session.errorMsg = 'Username yêu cầu 8 ký tự trở lên và tối đa 32 ký tự, xin vui lòng kiểm tra lại!';
                 return res.redirect('/user/register');
             }
 
             if (req.body.password !== req.body.confirmPassword) {
-                req.session.errorMsg = 'Password mismatched! Please try again!';
+                req.session.errorMsg = 'Password và nhập lại password phải trùng nhau, xin vui lòng thử lại!';
                 return res.redirect('/user/register');
             }
 
-            if (req.body.password.trim().length < 8) {
-                req.session.errorMsg = 'Password has at least 8 characters, excludes any white spaces!';
+            if (req.body.password.trim().length < 8 || req.body.password.trim().length > 64) {
+                req.session.errorMsg = 'Password yêu cầu từ 8 ký tự bất kỳ trở lên và không quá 64 ký tự';
                 return res.redirect('/user/register');
             }
 
@@ -51,6 +51,11 @@ module.exports = {
 
             // xử lý upload không phải hình ảnh
             if (req.file && req.file.path) {
+                if (!req.file.mimetype.startsWith('image')) {
+                    req.session.errorMsg = 'Có vẻ như tập tin tải lên không phải là hình ảnh, vui lòng kiểm tra lại!';
+                    return res.redirect('/products/create_new');
+                }
+
                 const uploadImage = await cloudinary.uploader.upload(req.file.path);
                 user.image.secure_url = uploadImage.secure_url;
                 user.image.public_id = uploadImage.public_id;
@@ -75,12 +80,12 @@ module.exports = {
 
             await sgMail.send(msg);
 
-            req.session.successMsg = `An email has been sent to ${req.body.email}. Please open your mailbox (make sure to check spams, too) and follow further instructions!`;
+            req.session.successMsg = `Một email xác nhận đã được gửi đến ${req.body.email}. Vui lòng kiểm tra hộp thư đến (và spam nữa) để hoàn tất đăng ký!`;
             return res.render('user/registerSuccessAndMail');
         } catch (error) {
-            let errorMessage = error.message;
+            let errorMessage = 'Username này đã bị trùng, xin vui lòng thử lại!';
             if (errorMessage.includes('duplicate')) {
-                errorMessage = `${req.body.email} had been used before. Please try again with another email!`; 
+                errorMessage = `${req.body.email} đã được sử dụng để đăng ký tài khoản trước. Xin vui lòng thử lại!`; 
             }
             
             req.session.errorMsg = errorMessage;
@@ -117,46 +122,46 @@ module.exports = {
     async postLogin(req, res, next) {
         try {
             if (req.body.username.trim().length < 8) {
-                req.session.errorMsg = 'Username requires at least 8 characters. Please choose another!';
+                req.session.errorMsg = 'Username có lớn hơn hoặc bằng 8 ký tự, xin vui lòng thử lại';
                 return res.redirect('/user/login');
             }
 
             if (req.body.password.trim().length < 8) {
-                req.session.errorMsg = 'Password has at least 8 characters, excludes any white spaces!';
+                req.session.errorMsg = 'Password có lớn hơn hoặc bằng 8 ký tự, xin vui lòng thử lại';
                 return res.redirect('/user/login');
             }
 
             const { user, error } = await User.authenticate()(req.body.username, req.body.password);
 
             if (!user) {
-                req.session.errorMsg = 'Invalid username or password!';
+                req.session.errorMsg = 'Username không tồn tại hoặc password không chính xác!';
                 return res.redirect('/user/login');
             }
 
             if (error) {
-                req.session.errorMsg = 'Some unexpected errors appeared when we had tried to log you in! Please login again!' + error.message;
+                req.session.errorMsg = 'Có lỗi xảy ra, xin vui lòng thử lại';
                 return res.redirect('/user/login');
             }
 
             if (user.isMail === 0) {
-                req.session.errorMsg = `Please open your mailbox (and spams, too) in the email address you had registered (${hideEmail(user.email)}), then follow further instructions to verify your account!`;
+                req.session.errorMsg = `Vui lòng mở email của bạn: (${hideEmail(user.email)}), và hoàn tất bước cuối cùng của việc đăng ký!`;
                 return res.redirect('/user/login');
             }
 
             req.login(user, function(err) {
                 if (err) {
                     console.log(err);
-                    req.session.errorMsg = 'Some unexpected errors appeared when we had tried to log you in! Please login again!';
+                    req.session.errorMsg = 'Có lỗi xảy ra, xin vui lòng thử lại';
                     return res.redirect('/user/login');
                 }
 
                 const _continue = req.query._continue || null;
 
-                req.session.successMsg = `Welcome, ${user.username}`;
+                req.session.successMsg = `Chào mừng, @${user.username}`;
                 return res.redirect(_continue || '/');
             })
         } catch (error) {
-            req.session.errorMsg = 'Some unexpected errors appeared when we had tried to log you in! Please login again!';
+            req.session.errorMsg = 'Có lỗi xảy ra, xin vui lòng thử lại';
             return res.redirect('/user/login');
         }
     },
