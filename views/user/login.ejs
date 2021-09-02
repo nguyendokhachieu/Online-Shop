@@ -1,33 +1,71 @@
 <% layout('layouts/boilerplate') -%>
-<h1>This is LOGIN PAGE</h1>
 
-<div>
-    <% if (successMsg) { %>
-        <h1><%= successMsg %></h1>
-    <% } %>
-    <% if (errorMsg) { %>
-        <h1><%= errorMsg %></h1>
-    <% } %>
-</div>
+<section class="login-section mt-44 lg:mt-32 animate__animated animate__fadeInUp">
+    <div class="container mx-auto md:px-20 px-10 ">
+        <div class="w-full md:w-96 mx-auto  rounded-lg shadow-sm py-4 px-5 bg-white">
+            <h2 class="merriweather text-2xl text-center pt-3 pb-5">Đăng nhập</h2>
+            <% if (errorMsg) { %>
+                <div class="mb-5 bg-red-100 text-red-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-red-500 border-t-0 border-r-0 border-l-0">
+                    <i class="fad fa-exclamation-triangle text-2xl"></i>
+                    <span><%= errorMsg %></span>
+                </div>
+            <% } %>
+            <% if (successMsg) { %>
+                <div class="mb-5 bg-green-100 text-green-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-green-500 border-t-0 border-r-0 border-l-0">
+                    <i class="fad fa-check-circle text-2xl"></i>
+                    <span><%= successMsg %></span>
+                </div>
+            <% } %>
+            <div>
+                <form action="/user/login<%- _continue !== null ? '?_continue=' : '' %><%- _continue !== null ? _continue : '' %>" method="POST" enctype="multipart/form-data" class="w-full">
+                    <div class="relative mb-5">
+                        <input type="text" id="username" name="username" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <label for="username" class="username-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Username</label>
+                    </div>
+                    <div class="relative mb-5">
+                        <input type="password" id="password" name="password" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <label for="password" class="password-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Password</label>
+                    </div>
+                    <div>
+                        <button type="submit" class="bg-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-600 shadow px-4 text-lg rounded-md w-full text-white ">Đăng nhập</button>
+                    </div>
+                </form>
+                <div class="my-5">
+                    <span class="text-gray-400">Bạn quên mật khẩu?</spanhref=>
+                    <a href="/user/forgot_password" class="text-gray-500 underline hover-underline-text-color">Khôi phục</a>
+                </div>
+                <div class="py-5 border-gray-300 border border-l-0 border-r-0 border-b-0">
+                    <div class="text-gray-400 mb-2">Bạn chưa có tài khoản?</div>
+                    <div>
+                        <a href="/user/register" class="inline-block text-center border border-indigo-500 bg-white text-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-500 hover:text-white shadow-sm px-4 text-lg rounded-md w-full">Đăng ký</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const usernameInput = document.querySelector('input[name="username"]');
+    const usernameLabel = document.querySelector('label.username-label');
 
-<form action="/user/login<%- _continue !== null ? '?_continue=' : '' %><%- _continue !== null ? _continue : '' %>" method="POST" enctype="multipart/form-data">
-    <div>
-        <label>
-            Username:
-            <input type="text" name="username" placeholder="Username" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Password:
-            <input type="password" name="password" placeholder="Password" />
-        </label>
-    </div>
-    <div>
-        <button type="submit">Login</button>
-    </div>
-</form>
+    usernameInput.addEventListener('blur', e => {
+        if (e.target.value.length) {
+            usernameLabel.classList.add('input-top-translate-holding');
+        } else {
+            usernameLabel.classList.remove('input-top-translate-holding');
+        }
 
-<div>
-    <a href="/user/forgot_password">Forgot Password?</a>
-</div>
+    })
+
+    const passwordInput = document.querySelector('input[name="password"]');
+    const passwordLabel = document.querySelector('label.password-label');
+
+    passwordInput.addEventListener('blur', e => {
+        if (e.target.value.length) {
+            passwordLabel.classList.add('input-top-translate-holding');
+        } else {
+            passwordLabel.classList.remove('input-top-translate-holding');
+        }
+
+    })
+</script>

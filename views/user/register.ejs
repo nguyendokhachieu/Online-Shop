@@ -1,44 +1,118 @@
 <% layout('layouts/boilerplate') -%>
-<h1>This is REGISTER PAGE</h1>
 
-<div>
-    <% if (errorMsg) { %>
-        <h1><%= errorMsg %></h1>
-    <% } %>
-</div>
+<section class="register-section mt-44 lg:mt-32 animate__animated animate__fadeInUp">
+    <div class="container mx-auto md:px-20 px-10 ">
+        <div class="w-full md:w-96 mx-auto  rounded-lg shadow-sm py-4 px-5 bg-white">
+            <h2 class="merriweather text-2xl text-center pt-3 pb-5">Đăng ký</h2>
+            <% if (errorMsg) { %>
+                <div class="mb-5 bg-red-100 text-red-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-red-500 border-t-0 border-r-0 border-l-0">
+                    <i class="fad fa-exclamation-triangle text-2xl"></i>
+                    <span><%= errorMsg %></span>
+                </div>
+            <% } %>
+            <div>
+                <form action="/user/register" method="POST" enctype="multipart/form-data">
+                    <div class="relative mb-5">
+                        <input type="text" id="username" name="username" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <label for="username" class="username-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Username</label>
+                    </div>
+                    <div class="relative mb-5">
+                        <input type="text" id="email" name="email" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <label for="email" class="email-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Email</label>
+                    </div>
+                    <div class="relative mb-5">
+                        <input type="password" id="password" name="password" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <label for="password" class="password-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Password</label>
+                    </div>
+                    <div class="relative mb-5">
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <label for="confirmPassword" class="confirmPassword-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Nhập lại password</label>
+                    </div>
+                    <div class="relative mb-5">
+                        <label class="cursor-pointer inline-block text-center border border-indigo-400 bg-white text-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-400 hover:text-white shadow-sm px-4 text-lg rounded-md w-full hover-text-inner-white">
+                            Tải ảnh đại diện lên <span class="text-xs text-gray-400 new-img-upload-count">Có thể để sau</span>
+                            <input type="file" name="image" accept="image/*" hidden class="hidden bg-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-600 shadow px-4 text-lg rounded-md w-full text-white" />
+                        </label>
+                        <div class="pt-5 img-preview flex justify-center items-center"></div>
+                    </div>
+                    <div>
+                        <button type="submit" class="bg-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-600 shadow px-4 text-lg rounded-md w-full text-white">Đăng ký</button>
+                    </div>
+                </form>
+                <div class="mt-5 border border-t-1 border-gray-200 py-5 border-gray-300 border border-l-0 border-r-0 border-b-0">
+                    <div class="text-gray-400 mb-2">Bạn đã có tài khoản?</div>
+                    <div>
+                        <a href="/user/login" class="inline-block text-center border border-indigo-500 bg-white text-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-500 hover:text-white shadow-sm px-4 text-lg rounded-md w-full">Đăng nhập</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const newImgCount = document.querySelector('.new-img-upload-count');
+    const imgUpload = document.querySelector('input[name="image"]');
+    const imgPreview = document.querySelector('.img-preview');
 
-<form action="/user/register" method="POST" enctype="multipart/form-data">
-    <div>
-        <label>
-            Username:
-            <input type="text" name="username" placeholder="Username" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Email:
-            <input type="text" name="email" placeholder="Email" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Password:
-            <input type="password" name="password" placeholder="Password" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Confirm Password:
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" />
-        </label>
-    </div>
-    <div>
-        <label>
-            Profile Image:
-            <input type="file" name="image" />
-        </label>
-    </div>
-    <div>
-        <button type="submit">Register</button>
-    </div>
-</form>
+    imgUpload.addEventListener('change', evt => {
+        const file = imgUpload.files && imgUpload.files[0];
+
+        if (imgUpload.files && imgUpload.files[0]) {
+            newImgCount.classList.add('text-indigo-500');
+            newImgCount.textContent = `Đã chọn 1 hình ảnh`;
+
+            let imgTag = document.createElement('img');
+            imgTag.src = URL.createObjectURL(file);
+            imgTag.alt = 'image preview';
+            imgTag.className = 'rounded-full object-cover w-20 h-20';
+            imgPreview.appendChild(imgTag);
+        }
+    })
+
+    const usernameInput = document.querySelector('input[name="username"]');
+    const usernameLabel = document.querySelector('label.username-label');
+
+    usernameInput.addEventListener('blur', e => {
+        if (e.target.value.length) {
+            usernameLabel.classList.add('input-top-translate-holding');
+        } else {
+            usernameLabel.classList.remove('input-top-translate-holding');
+        }
+
+    })
+
+    const passwordInput = document.querySelector('input[name="password"]');
+    const passwordLabel = document.querySelector('label.password-label');
+
+    passwordInput.addEventListener('blur', e => {
+        if (e.target.value.length) {
+            passwordLabel.classList.add('input-top-translate-holding');
+        } else {
+            passwordLabel.classList.remove('input-top-translate-holding');
+        }
+
+    })
+
+    const confirmPasswordInput = document.querySelector('input[name="confirmPassword"]');
+    const confirmPasswordLabel = document.querySelector('label.confirmPassword-label');
+
+    confirmPasswordInput.addEventListener('blur', e => {
+        if (e.target.value.length) {
+            confirmPasswordLabel.classList.add('input-top-translate-holding');
+        } else {
+            confirmPasswordLabel.classList.remove('input-top-translate-holding');
+        }
+
+    })
+    const emailInput = document.querySelector('input[name="email"]');
+    const emailLabel = document.querySelector('label.email-label');
+
+    emailInput.addEventListener('blur', e => {
+        if (e.target.value.length) {
+            emailLabel.classList.add('input-top-translate-holding');
+        } else {
+            emailLabel.classList.remove('input-top-translate-holding');
+        }
+
+    })
+</script>

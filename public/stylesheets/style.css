@@ -164,3 +164,58 @@ body.modal-active {
 .top-nav-active {
   background-color: rgba(129, 140, 248, 1);
 }
+
+/* LOGIN PAGE */
+.input-animate {
+  transition: all 0.3s ease;
+}
+
+.input-animate:focus {
+  border-color: rgba(29, 78, 216, 1);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+}
+
+.input-animate:focus + .input-label {
+  transform: translate( -8px, -18px);
+  font-size: 11px;
+  color: rgba(75, 85, 99, 0.8);
+}
+
+.input-top-translate-holding {
+  transform: translate( -8px, -18px);
+  font-size: 11px;
+  color: rgba(75, 85, 99, 0.8);
+}
+
+.hover-underline-text-color {
+  position: relative;
+  transition: all 0.5s ease;
+}
+
+.hover-underline-text-color:hover {
+  color: rgba(16, 185, 129, 1);
+}
+
+.hover-underline-text-color::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  transition: all 0.2s ease;
+  background-color: rgba(16, 185, 129, 0.2);
+
+}
+
+.hover-underline-text-color:hover:after {
+  width: 100%;
+}
+
+/*REGISTER PAGE*/
+.hover-text-inner-white span {
+  transition: all 0.2s ease;
+}
+.hover-text-inner-white:hover span {
+  color: #fff;
+}
