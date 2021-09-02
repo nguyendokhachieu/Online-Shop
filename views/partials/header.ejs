@@ -5,8 +5,10 @@
         </div>
         <div class="top-nav-buttons text-white">
             <ul class="flex">
-                <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-home md:mr-2"></i><span class="md:inline hidden">Trang chủ</span></a></li>
-                <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-list-alt md:mr-2"></i><span class="md:inline hidden">Quản lý sản phẩm</span></a></li>
+                <li><a href="/" class="px-4 py-1 rounded hover:bg-indigo-400 transition-all duration-200 home-top-nav"><i class="fas fa-home md:mr-2"></i><span class="md:inline hidden">Trang chủ</span></a></li>
+                <% if (currentUser) { %>
+                    <li><a href="/user/profile/<%= currentUser.username %>" class="px-4 py-1 rounded hover:bg-indigo-400 transition-all duration-200 user-top-nav"><i class="fad fa-user-circle md:mr-2"></i><span class="md:inline hidden">@<%= currentUser.username %></span></a></li>
+                <% } %>
             </ul>
         </div>
     </div>
@@ -16,8 +18,21 @@
             <button type="submit" class="hidden">Tìm kiếm</button>
         </form>
         <div class="text-right">
-            <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-user mr-2"></i><span>Đăng nhập</span></button>
-            <button class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-plus-square mr-2"></i><span>Đăng tin</span></button>
+            <% if (currentUser) { %>
+                <a href="/products/create_new" class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-plus-square mr-2"></i><span>Sản phẩm mới</span></a>
+            <% } else { %>
+                <a href="/user/login" class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="fad fa-sign-in-alt mr-2"></i><span>Đăng nhập</span></a>
+                <a href="/user/register" class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="fad fa-user-plus mr-2"></i><span>Đăng ký</span></a>
+            <% } %>
         </div>
     </div>
 </header>
+<script>
+    const homeNav = document.querySelector('.home-top-nav');
+    const userNav = document.querySelector('.user-top-nav');
+
+    const pathname = window.location.pathname;
+    
+    if (pathname === '/') homeNav.classList.add('top-nav-active');
+    else if (pathname.startsWith(`/user/profile/<%- currentUser.username.toString() %>`)) userNav.classList.add('top-nav-active');
+</script>
