@@ -110,7 +110,7 @@ module.exports = {
             user.verificationExpires = null; // 30 minutes
             await user.save();
 
-            req.session.successMsg = 'Successfully verified your account! Please use your registered infomation to login';
+            req.session.successMsg = 'Thành công! Bạn đã hoàn tất đăng ký, bây giờ hãy sử dụng thông tin username và password để đăng nhập!';
             return res.redirect('/user/login');
             
         } catch (error) {
