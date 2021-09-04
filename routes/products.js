@@ -10,6 +10,7 @@ const {
     putEditSingleProduct,
     deleteSingleProduct,
     getShowProductsPaginate,
+    deleteManyPosts,
 } = require('../controllers/product');
 const {
     postCreateNewReview,
@@ -25,7 +26,8 @@ const {
 router.get('/create_new', isLoggedIn, getCreateNewProduct);
 router.post('/create_new', upload.array('images', 4), isLoggedIn, postCreateNewProduct);
 
-// one person review one product one time
+router.delete('/delete_many', upload.none(), deleteManyPosts);
+
 router.delete('/:product_id/reviews/:review_id', isLoggedIn, deleteSingleReview);
 router.put('/:product_id/reviews/:review_id', isLoggedIn, putEditSingleReview);
 router.post('/:product_id/reviews', upload.none(), isLoggedIn, checkOneTimeReview, postCreateNewReview);

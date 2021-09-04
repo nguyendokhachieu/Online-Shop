@@ -1,88 +1,247 @@
-<% layout('layouts/boilerplate') -%>
-
-<% if (currentUser && currentUser.username === user.username) { %>
-    <form action="/user/profile/<%= user.username %>/profile_image?_method=PATCH" name="formProfileImage" method="POST" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*" />
-        <input type="submit" value="Change profile picture" />
-    </form>
-
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-        Change Password
-    </button>
-      
-      <!-- Modal Change Password -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/stylesheets/tailwindbuild.css" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossOrigin="anonymous" />
+    <title>Dashboard - Marketplace</title>
+</head>
+<body class="bg-indigo-50">
+    <div class="body-wrapper">
+        <header class="bg-gray-800 shadow-md fixed top-0 left-0 z-10 w-full">
+            <div class="container mx-auto md:px-20 px-10 flex justify-between items-center">
+                <div class="page-logo text-white text-2xl py-2">
+                    <a href="/">Marketplace</a>
+                </div>
+                <div class="top-nav-buttons text-white">
+                    <ul class="flex">
+                        <li><a href="/" class="px-5 py-2 rounded hover:bg-indigo-400 transition-all duration-200"><i class="fas fa-home md:mr-2"></i><span class="md:inline hidden">Trang chủ</span></a></li>
+                        <li><a href="#" class="px-5 py-2 rounded bg-indigo-400 transition-all duration-200 relative z-10"><i class="fad fa-user-circle md:mr-2"></i><span class="md:inline hidden">Dashboard</span></a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="modal-body">
-                <form action="/user/profile/<%= user.username %>/change_password?_method=PATCH" name="formChangePassword" method="POST" enctype="multipart/form-data">
+        </header>
+        <section class="pt-12 flex justify-start h-screen overflow-hidden">
+            <section class="scrollbarCus my-w-50px h-screen overflow-auto overflow-x-hidden dashboard-bg-color">
+                <div>
+                    <h5 class="flex items-center justify-center p-4 text-xl text-gray-400"><i class="far fa-bars"></i></h5>
+                </div>
+                <ul>
+                    <li><a href="#" class="dashboardLeftNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fal fa-list-ol"></i></a></li>
+                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fas fa-lock-alt"></i></a></li>
+                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="far fa-user-plus"></i></a></li>
+                </ul>
+            </section>
+            <section class="scrollbarCus my-w-244px h-screen overflow-auto overflow-x-hidden dashboard-bg-color">
+                <div>
+                    <h5 class="flex items-center justify-start text-lg p-3 text-md text-gray-200">Dashboard</h5>
+                </div>
+                <ul>
+                    <li><a href="#" class="dashboardMiddleNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Quản lý sản phẩm</a></li>
+                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Thay đổi mật khẩu</a></li>
+                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Cập nhật ảnh đại diện</a></li>
+                </ul>
+            </section>
+            <section class="my-w-remaining h-screen overflow-auto overflow-x-hidden px-5">
+                <div class="py-5">
+                    <h2 class="border-l-4 border-indigo-500 pl-3 merriweather text-gray-600 text-xl">Quản lý danh sách sản phẩm đã đăng</h2>
+                </div>
+                <% if (productsPaginate.docs && productsPaginate.docs.length ) { %>
                     <div>
-                        <label>
-                            Current Password:
-                            <input type="password" name="currentPassword" placeholder="Current Password" />
-                        </label>
+                        <div class="show-confirm-modal-for-delete-many hidden inline-block my-3 bg-red-100 text-red-600 transition-all duration-200 hover:bg-red-200 cursor-pointer px-5 py-2 rounded shadow">Xóa các mục đã chọn</div>
+                        <div class="deleteManyModal deleteModal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center transition-all duration-300">
+                            <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+                            <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                                <div class="modal-content py-4 text-left px-6">
+                                    <div class="flex justify-between items-center pb-3">
+                                        <p class="text-2xl font-bold">Xóa các mục đã chọn</p>
+                                        <div class="modal-close cursor-pointer z-50"><i class="far fa-times modal-close"></i></div>
+                                    </div>
+                                    <div class="flex justify-end pt-2">
+                                        <div class="confirm-delete-many px-4 bg-transparent p-3 rounded-lg text-indigo-500 hover:bg-gray-100 hover:text-indigo-400 mr-2 cursor-pointer">Xóa</div>
+                                        <div class="modal-close px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 cursor-pointer">Hủy bỏ</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div>
-                        <label>
-                            New Password:
-                            <input type="password" name="newPassword" placeholder="New Password" />
-                        </label>
+                        <form action="/products/delete_many?_method=DELETE" method="POST" name="tableForm" enctype="multipart/form-data">
+                            <table class="table-fixed border border-gray-300 min-w-full">
+                                <thead class="border-b-2 border-gray-300">
+                                  <tr>
+                                    <th class="w-1/12 p-2 text-gray-700 border-r-2 border-gray-300"><input type="checkbox" name="checkAll" /></th>
+                                    <th class="w-1/12 p-2 text-gray-700 border-r-2 border-gray-300">STT</th>
+                                    <th class="w-5/12 p-2 text-gray-700 border-r-2 border-gray-300">Tên sản phẩm</th>
+                                    <th class="w-2/12 p-2 text-gray-700 border-r-2 border-gray-300">Giá</th>
+                                    <th class="w-3/12 p-2 text-gray-700">Hành động</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    <% productsPaginate.docs.forEach(function(product, index) { %>
+                                        <tr class="<%= index % 2 === 0 ? 'bg-gray-200' : '' %> text-center row-<%= product.id %>">
+                                            <td class="p-2"><input type="checkbox" name="deleteManyCheckbox[]" value="<%= product.id %>" /></td>
+                                            <td class="p-2"><%= index + 1 %></td>
+                                            <td class="p-2"><%= product.title %></td>
+                                            <td class="p-2"><%= new Intl.NumberFormat().format(product.price) %> VND</td>
+                                            <td class="p-2">
+                                                <a href="/products/<%= product.id %>" class="bg-red-100 px-4 mb-1 py-1 inline-block rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-all">Xem</a>
+                                                <a href="/products/<%= product.id %>/edit" class="bg-red-100 px-4 mb-1 py-1 inline-block rounded bg-indigo-200 text-indigo-600 hover:bg-indigo-300 transition-all">Sửa</a>
+                                                <div data-showconfirmmodalid="<%= product.id %>" class="show-confirm-delete-modal bg-red-100 px-4 mb-1 py-1 inline-block rounded bg-red-100 text-red-600 hover:bg-red-200 transition-all cursor-pointer">Xóa</div>
+                                                <div class="deleteModal-<%= product.id %> deleteModal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center transition-all duration-300">
+                                                    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+                                                    <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                                                        <div class="modal-content py-4 text-left px-6">
+                                                            <div class="flex justify-between items-center pb-3">
+                                                                <p class="text-2xl font-bold">Xóa <span class="italic"><%= product.title %></span></p>
+                                                                <div class="modal-close cursor-pointer z-50"><i class="far fa-times modal-close"></i></div>
+                                                            </div>
+                                                            <p>Sản phẩm sẽ bị xóa và không thể khôi phục!</p>
+                                                            <div class="flex justify-end pt-2">
+                                                                <div class="confirm-delete-<%= product.id %> px-4 bg-transparent p-3 rounded-lg text-indigo-500 hover:bg-gray-100 hover:text-indigo-400 mr-2 cursor-pointer">Xóa</div>
+                                                                <div class="modal-close px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 cursor-pointer">Hủy bỏ</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                            <input type="submit" hidden />
+                        </form>
                     </div>
-                    <div>
-                        <label>
-                            Confirm New Password:
-                            <input type="password" name="confirmPassword" placeholder="Confirm New Password" />
-                        </label>
+                    <nav class="pt-5 flex justify-end">
+                        <ul class="flex justify-start">
+                            <% if (productsPaginate.page > 1) { %>
+                                <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/dashboard/products?page=<%= productsPaginate.page - 1 %>">Previous</a></li>
+                            <% } else { %>
+                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
+                            <% } %>
+                
+                            <% if (productsPaginate.page > 4) { %>
+                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                            <% } %>
+                
+                            <% for(let i = productsPaginate.page <= 3 ? 1 : productsPaginate.page - 3 ; i <= (productsPaginate.page + 3 > productsPaginate.totalPages ? productsPaginate.totalPages : productsPaginate.page + 3); i++) { %>
+                                <li class="<%- productsPaginate.page === i ? 'paginate-item-active' : '' %>"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/dashboard/products?page=<%= i %>"><%= i %></a></li>
+                            <% } %>
+                            
+                            <% if (productsPaginate.page <= productsPaginate.totalPages - 4) { %>
+                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                            <% } %>
+                
+                            <% if (productsPaginate.page < productsPaginate.totalPages) { %>
+                                <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/dashboard/products?page=<%= productsPaginate.page + 1 %>">Next</a></li>
+                            <% } else { %>
+                                <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                <% } else { %>
+                    <div class="flex flex-col justify-center items-center py-5">
+                        <i class="fad fa-file-search text-6xl text-gray-400"></i>
+                        <span class="py-5 text-gray-500">Bạn chưa đăng tin hay sản phẩm nào!</span>
                     </div>
-                    <div>
-                        <button type="submit">Change Password</button>
-                    </div>
-                </form>
-            </div>
-            </div>
-        </div>
+                <% } %>
+            </section>
+        </section>
     </div>
+</body>
+<% if (productsPaginate.docs && productsPaginate.docs.length ) { %>
+    <script>
+        const arrayShowConfirmDeleteModal = document.querySelectorAll('.show-confirm-delete-modal');
+        if (arrayShowConfirmDeleteModal.length) {
+            arrayShowConfirmDeleteModal.forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+    
+                    let deleteId = e.target.getAttribute('data-showconfirmmodalid');
+    
+                    let modal = document.querySelector(`div.deleteModal-${deleteId}`);
+                    modal.classList.remove('opacity-0');
+                    modal.classList.remove('pointer-events-none');
+    
+                    document.querySelector(`.confirm-delete-${deleteId}`).addEventListener('click', e => {
+                        e.preventDefault();
+
+                        fetch(`/products/${deleteId}/delete?_method=DELETE`, {
+                            method: 'DELETE',
+                            cache: 'no-cache',
+                            credentials: 'same-origin',
+                        }).then(response => {
+                            document.querySelectorAll('.deleteModal').forEach(dM => {
+                                dM.classList.add('opacity-0')
+                                dM.classList.add('pointer-events-none');
+                            })
+                            $(`.row-${deleteId}`).fadeOut(1000);
+                        }).catch(e => {
+                            document.querySelectorAll('.deleteModal').forEach(dM => {
+                                dM.classList.add('opacity-0')
+                                dM.classList.add('pointer-events-none');
+                            })
+                            $(`.row-${deleteId}`).fadeOut(1000);
+                        })
+                    })
+    
+                })
+            })
+        }
+    
+        const arrayDeleteManyCheckboxes = document.querySelectorAll('input[type="checkbox"][name="deleteManyCheckbox[]"]');
+        const checkAllCheckbox = document.querySelector('input[type="checkbox"][name="checkAll"]');
+        const showConfirmModalForDeleteManyButton = document.querySelector('.show-confirm-modal-for-delete-many');
+    
+        checkAllCheckbox.addEventListener('change', e => {
+            if (e.target.checked) {
+                arrayDeleteManyCheckboxes.forEach(ckb => ckb.checked = true);
+                showConfirmModalForDeleteManyButton.classList.remove('hidden');
+            } else {
+                arrayDeleteManyCheckboxes.forEach(ckb => ckb.checked = false);
+                showConfirmModalForDeleteManyButton.classList.add('hidden');
+            }
+        })
+    
+        arrayDeleteManyCheckboxes.forEach(ckb => {
+            ckb.addEventListener('change', e => {
+                let totalChecked = 0;
+                arrayDeleteManyCheckboxes.forEach(c => c.checked ? totalChecked += 1 : 0);
+                if (arrayDeleteManyCheckboxes.length === totalChecked) checkAllCheckbox.checked = true;
+                else checkAllCheckbox.checked = false;
+    
+                if (totalChecked === 0) showConfirmModalForDeleteManyButton.classList.add('hidden');
+                else showConfirmModalForDeleteManyButton.classList.remove('hidden');
+            })
+        })
+    
+        showConfirmModalForDeleteManyButton.addEventListener('click', e => {
+            document.querySelector('.deleteManyModal').classList.remove('opacity-0');
+            document.querySelector('.deleteManyModal').classList.remove('pointer-events-none');
+        })
+    
+        const confirmDeleteManyButton = document.querySelector('.confirm-delete-many');
+        confirmDeleteManyButton.addEventListener('click', e => {
+            const tableForm = document.querySelector('form[name="tableForm"]');
+            tableForm.submit();
+        })
+    
+        document.addEventListener('click', e => {
+            if (e.target.classList.value.includes('modal-overlay') || e.target.classList.value.includes('modal-close')) {
+                const arrayDeleteModals = document.querySelectorAll('.deleteModal');
+                if (arrayDeleteModals.length) {
+                    arrayDeleteModals.forEach(dM => {
+                        dM.classList.add('opacity-0')
+                        dM.classList.add('pointer-events-none');
+                    })
+                }
+            }
+        })
+    </script>
 <% } %>
-
-<script>
-    const formProfileImage = document.querySelector('form[name="formProfileImage"]');
-    const inputProfileImage = document.querySelector('input[name="image"]');
-
-    const formChangePassword = document.querySelector('form[name="formChangePassword"]');
-    const inputCurrentPassword = document.querySelector('input[name="currentPassword"]');
-    const inputNewPassword = document.querySelector('input[name="newPassword"]');
-    const inputConfirmPassword = document.querySelector('input[name="confirmPassword"]');
-
-    formProfileImage.addEventListener('submit', e => {
-        if (inputProfileImage.files.length === 0) {
-            e.preventDefault();
-            alert('Please choose image!');
-        }
-    })
-
-    formChangePassword.addEventListener('submit', e => {
-        if (!inputCurrentPassword.value.trim() || inputCurrentPassword.value.length < 8) {
-            e.preventDefault();
-            alert('Current password has at least 8 characters');
-        }
-        else if (!inputNewPassword.value.trim() || inputNewPassword.value.length < 8) {
-            e.preventDefault();
-            alert('New password has at least 8 characters');
-        }
-        else if (!inputConfirmPassword.value.trim() || inputConfirmPassword.value.length < 8) {
-            e.preventDefault();
-            alert('Password confirmation has at least 8 characters');
-        } 
-
-        if (inputNewPassword.value !== inputConfirmPassword.value) {
-            e.preventDefault();
-            alert('New password and password confirmation mismatched!');
-        }
-    })
-
-    // REVIEW PRODUCT
-</script>
+</html>

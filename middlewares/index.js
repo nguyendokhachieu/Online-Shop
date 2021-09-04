@@ -13,7 +13,6 @@ module.exports = {
     async isProductSeller(req, res, next) {
         try {
             const product = await Product.findById(req.params.product_id);
-
             if (!product) {
                 req.session.errorMsg = 'Not found';
                 return res.render('error/index');
