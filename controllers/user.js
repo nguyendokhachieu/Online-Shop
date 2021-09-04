@@ -150,7 +150,6 @@ module.exports = {
 
             req.login(user, function(err) {
                 if (err) {
-                    console.log(err);
                     req.session.errorMsg = 'Có lỗi xảy ra, xin vui lòng thử lại';
                     return res.redirect('/user/login');
                 }

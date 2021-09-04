@@ -263,6 +263,12 @@ module.exports = {
             }
 
             await Product.findByIdAndRemove(product.id);
+            if (req.query._cross_page && req.query._cross_page === 'none') {
+                return res.json({
+                    ok: true,
+                    deleted: true,
+                })
+            } 
 
             req.session.successMsg = 'Successfully deleted your product!';
             return res.redirect('/products');
@@ -298,6 +304,15 @@ module.exports = {
         } catch (error) {
             req.session.errorMsg = 'Error finding products';
             return res.render('error/index');
+        }
+    },
+
+    async deleteManyPosts(req, res, next) {
+        try {
+            console.log(req.body);
+            //req.body.deleteManyCheckbox // array of checkbox's value
+        } catch (error) {
+            
         }
     }
 }
