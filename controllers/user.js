@@ -311,15 +311,15 @@ module.exports = {
         try {
             if (req.file) {
                 if (!req.file.mimetype.startsWith('image')) {
-                    req.session.errorMsg = 'One or multiple files are not in image format!';
-                    return res.redirect(`/user/profile/${req.user.username}`);
+                    req.session.errorMsg = 'File không phải định dạng hình ảnh! Xin vui lòng kiểm tra lại';
+                    return res.redirect(`/dashboard/avatar_upload`);
                 }
 
                 const user = await User.findById(req.user._id);
 
                 if (!user) {
-                    req.session.errorMsg = 'Cannot find user!';
-                    return res.redirect(`/user/profile/${req.user.username}`);
+                    req.session.errorMsg = 'Không tìm thấy bạn!';
+                    return res.redirect(`/dashboard/avatar_upload`);
                 }
 
                 if (!user.image.secure_url.includes('/images/default-avatar.png')) {
@@ -333,15 +333,15 @@ module.exports = {
 
                 await user.save();
 
-                req.session.successMsg = 'Updated your profile image!';
-                return res.redirect(`/user/profile/${req.user.username}`);
+                req.session.successMsg = 'Cập nhật ảnh đại diện thành công';
+                return res.redirect(`/dashboard/avatar_upload`);
             }
 
-            req.session.errorMsg = 'Please choose your profile image!';
-            return res.redirect(`/user/profile/${req.user.username}`);
+            req.session.errorMsg = 'Vui lòng chọn 1 ảnh!';
+            return res.redirect(`/dashboard/avatar_upload`);
         } catch (error) {
-            req.session.errorMsg = 'Some unexpected errors happened';
-            return res.redirect(`/user/profile/${req.user.username}`);
+            req.session.errorMsg = 'Có lỗi xảy ra!';
+            return res.redirect(`/dashboard/avatar_upload`);
         }
     },
 
@@ -365,8 +365,8 @@ module.exports = {
             const { user, error } = await User.authenticate()(req.user.username, req.body.currentPassword);
 
             if (!user || error) {
-                req.session.errorMsg = 'Some unexpected errors happened! We cannot find your info right now';
-                return res.redirect(`/user/profile/${req.user.username}`);
+                req.session.errorMsg = 'Mật khẩu không hợp lệ! Xin vui lòng thử lại';
+                return res.redirect(`/dashboard/change_password`);
             }
 
             await user.setPassword(req.body.newPassword);
@@ -374,15 +374,15 @@ module.exports = {
 
             req.login(user, function(err) {
                 if (err) {
-                    req.session.errorMsg = 'Some unexpected errors happened while we logged you in! Please try to login again!';
+                    req.session.errorMsg = 'Có lỗi xảy ra!';
                     return res.redirect('/user/login');
                 }
 
-                req.session.successMsg = 'Password changed successfully!';
-                return res.redirect(`/user/profile/${req.user.username}`);
+                req.session.successMsg = 'Thay đổi mật khẩu thành công!';
+                return res.redirect(`/dashboard/change_password`);
             })
         } catch (error) {
-            req.session.errorMsg = 'Some unexpected errors happened!';
+            req.session.errorMsg = 'Có lỗi xảy ra!';
             return res.redirect(`/user/profile/${req.user.username}`);
         }
     }

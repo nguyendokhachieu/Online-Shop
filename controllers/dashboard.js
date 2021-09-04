@@ -16,6 +16,14 @@ module.exports = {
             req.session.errorMsg = 'Có lỗi xảy ra, thử tải lại trang!';
             return res.render('error/index');
         }
+    },
+
+    getDashboardChangePasswordPage(req, res, next) {
+        return res.render('dashboard/changePassword');
+    },
+
+    async getDashboardAvatarUploadPage(req, res, next) {
+        return res.render('dashboard/avatarUpload');
     }
     
 }

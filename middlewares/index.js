@@ -30,6 +30,34 @@ module.exports = {
         }
     },
 
+    async isAllProductsMine(req, res, next) {
+        try {
+            if (req.body.deleteManyCheckbox && req.body.deleteManyCheckbox.length) {
+                for (const deleteId of req.body.deleteManyCheckbox) {
+                    let product = await Product.findById(deleteId);
+
+                    if (!product) {
+                        req.session.errorMsg = 'Không tìm thấy một hoặc nhiều sản phẩm!';
+                        return res.redirect('/dashboard/products');
+                    }
+
+                    if (!product.seller.equals(req.user._id)) {
+                        req.session.errorMsg = 'Truy cập bị từ chối!';
+                        return res.redirect('/dashboard/products');
+                    }
+
+                    return next();
+                }
+            } else {
+                req.session.errorMsg = 'Vui lòng chọn ít nhất một mục!';
+                return res.render('error/index');
+            }
+        } catch (error) {
+            req.session.errorMsg = 'Có lỗi xảy ra, xin vui lòng thử lại!';
+            return res.render('error/index');
+        }
+    },
+
     async isMyself(req, res, next) {
         try {
             const user = await User.findOne({

@@ -309,10 +309,15 @@ module.exports = {
 
     async deleteManyPosts(req, res, next) {
         try {
-            console.log(req.body);
-            //req.body.deleteManyCheckbox // array of checkbox's value
+            await Product.deleteMany({
+                _id: { $in: req.body.deleteManyCheckbox }
+            })
+
+            req.session.successMsg = `Xóa thành công ${req.body.deleteManyCheckbox.length} sản phẩm`;
+            return res.redirect('/dashboard/products?page=1');
         } catch (error) {
-            
+            req.session.errorMsg = 'Có lỗi xảy ra trong quá trình xóa, xin vui lòng thử lại!';
+            return res.redirect('/dashboard/products?page=1');
         }
     }
 }

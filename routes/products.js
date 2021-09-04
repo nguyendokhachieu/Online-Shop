@@ -21,12 +21,13 @@ const {
     isLoggedIn,
     isProductSeller,
     checkOneTimeReview,
+    isAllProductsMine,
 } = require('../middlewares');
 
 router.get('/create_new', isLoggedIn, getCreateNewProduct);
 router.post('/create_new', upload.array('images', 4), isLoggedIn, postCreateNewProduct);
 
-router.delete('/delete_many', upload.none(), deleteManyPosts);
+router.delete('/delete_many', upload.none(), isLoggedIn, isAllProductsMine, deleteManyPosts);
 
 router.delete('/:product_id/reviews/:review_id', isLoggedIn, deleteSingleReview);
 router.put('/:product_id/reviews/:review_id', isLoggedIn, putEditSingleReview);

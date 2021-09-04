@@ -33,8 +33,8 @@
                 </div>
                 <ul>
                     <li><a href="#" class="dashboardLeftNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fal fa-list-ol"></i></a></li>
-                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fas fa-lock-alt"></i></a></li>
-                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="far fa-user-plus"></i></a></li>
+                    <li><a href="/dashboard/change_password" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fas fa-lock-alt"></i></a></li>
+                    <li><a href="/dashboard/avatar_upload" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="far fa-user-plus"></i></a></li>
                 </ul>
             </section>
             <section class="scrollbarCus my-w-244px h-screen overflow-auto overflow-x-hidden dashboard-bg-color">
@@ -43,14 +43,26 @@
                 </div>
                 <ul>
                     <li><a href="#" class="dashboardMiddleNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Quản lý sản phẩm</a></li>
-                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Thay đổi mật khẩu</a></li>
-                    <li><a href="#" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Cập nhật ảnh đại diện</a></li>
+                    <li><a href="/dashboard/change_password" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Thay đổi mật khẩu</a></li>
+                    <li><a href="/dashboard/avatar_upload" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Cập nhật ảnh đại diện</a></li>
                 </ul>
             </section>
-            <section class="my-w-remaining h-screen overflow-auto overflow-x-hidden px-5">
+            <section class="my-w-remaining overflow-auto overflow-x-hidden px-5">
                 <div class="py-5">
                     <h2 class="border-l-4 border-indigo-500 pl-3 merriweather text-gray-600 text-xl">Quản lý danh sách sản phẩm đã đăng</h2>
                 </div>
+                <% if (errorMsg) { %>
+                    <div class="mb-5 bg-red-100 text-red-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-red-500 border-t-0 border-r-0 border-l-0">
+                        <i class="fad fa-exclamation-triangle text-2xl"></i>
+                        <span><%= errorMsg %></span>
+                    </div>
+                <% } %>
+                <% if (successMsg) { %>
+                    <div class="mb-5 bg-green-100 text-green-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-green-500 border-t-0 border-r-0 border-l-0">
+                        <i class="fad fa-check-circle text-2xl"></i>
+                        <span><%= successMsg %></span>
+                    </div>
+                <% } %>
                 <% if (productsPaginate.docs && productsPaginate.docs.length ) { %>
                     <div>
                         <div class="show-confirm-modal-for-delete-many hidden inline-block my-3 bg-red-100 text-red-600 transition-all duration-200 hover:bg-red-200 cursor-pointer px-5 py-2 rounded shadow">Xóa các mục đã chọn</div>

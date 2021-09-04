@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/stylesheets/tailwindbuild.css" />
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossOrigin="anonymous" />
@@ -32,8 +33,8 @@
                 </div>
                 <ul>
                     <li><a href="/dashboard/products?page=1" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fal fa-list-ol"></i></a></li>
-                    <li><a href="#" class="dashboardLeftNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fas fa-lock-alt"></i></a></li>
-                    <li><a href="/dashboard/avatar_upload" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="far fa-user-plus"></i></a></li>
+                    <li><a href="/dashboard/change_password" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="fas fa-lock-alt"></i></a></li>
+                    <li><a href="#" class="dashboardLeftNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 text-md py-4 inline-block w-full flex items-center justify-center"><i class="far fa-user-plus"></i></a></li>
                 </ul>
             </section>
             <section class="scrollbarCus my-w-244px h-screen overflow-auto overflow-x-hidden dashboard-bg-color">
@@ -42,13 +43,13 @@
                 </div>
                 <ul>
                     <li><a href="/dashboard/products?page=1" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Quản lý sản phẩm</a></li>
-                    <li><a href="#" class="dashboardMiddleNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Thay đổi mật khẩu</a></li>
-                    <li><a href="/dashboard/avatar_upload" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Cập nhật ảnh đại diện</a></li>
+                    <li><a href="/dashboard/change_password" class="transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Thay đổi mật khẩu</a></li>
+                    <li><a href="#" class="dashboardMiddleNav-active transition-all duration-200 hover:bg-gray-900 text-gray-300 py-3 inline-block w-full flex items-center justify-start pl-3">Cập nhật ảnh đại diện</a></li>
                 </ul>
             </section>
             <section class="my-w-remaining overflow-auto overflow-x-hidden px-5">
                 <div class="py-5 ">
-                    <h2 class="border-l-4 border-indigo-500 pl-3 merriweather text-gray-600 text-xl">Thay đổi mật khẩu</h2>
+                    <h2 class="border-l-4 border-indigo-500 pl-3 merriweather text-gray-600 text-xl">Cập nhật ảnh đại diện</h2>
                 </div>
                 <% if (errorMsg) { %>
                     <div class="mb-5 bg-red-100 text-red-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-red-500 border-t-0 border-r-0 border-l-0">
@@ -66,18 +67,10 @@
                     <div class="container mx-auto">
                         <div class="w-full py-4 px-5">
                             <div>
-                                <form action="/user/profile/<%= currentUser.username %>/change_password?_method=PATCH" name="formChangePassword" method="POST" enctype="multipart/form-data" class="w-full">
+                                <form action="/user/profile/<%= currentUser.username %>/profile_image?_method=PATCH" name="formProfileImage" method="POST" enctype="multipart/form-data" class="w-full">
                                     <div class="mb-5">
-                                        <label for="currentPassword" class="text-md text-gray-500 my-2 inline-block">Mật khẩu hiện tại</label>
-                                        <input type="password" id="currentPassword" name="currentPassword" placeholder="Mật khẩu hiện tại" class="w-full outline-none text-md border border-gray-300 py-3 px-4 rounded-md shadow-sm bg-gray-50 focus:bg-white transition-all duration-200" />
-                                    </div>
-                                    <div class="mb-5">
-                                        <label for="newPassword" class="text-md text-gray-500 my-2 inline-block">Mật khẩu mới</label>
-                                        <input type="password" id="newPassword" name="newPassword" placeholder="Mật khẩu mới" class="w-full outline-none text-md border border-gray-300 py-3 px-4 rounded-md shadow-sm bg-gray-50 focus:bg-white transition-all duration-200" />
-                                    </div>
-                                    <div class="mb-5">
-                                        <label for="confirmPassword" class="text-md text-gray-500 my-2 inline-block">Xác nhận mật khẩu mới</label>
-                                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Xác nhận mật khẩu mới" class="w-full outline-none text-md border border-gray-300 py-3 px-4 rounded-md shadow-sm bg-gray-50 focus:bg-white transition-all duration-200" />
+                                        <label for="image" class="w-full inline-block cursor-pointer outline-none text-md border border-gray-300 py-3 px-4 rounded-md shadow-sm bg-gray-100 hover:bg-white transition-all duration-200 text-gray-700">+ Chọn hình ảnh</label>
+                                        <input type="file" id="image" name="image" accept="image/*" hidden />
                                     </div>
                                     <div>
                                         <button type="submit" class="bg-indigo-500 py-2 transition-all duration-200 hover:bg-indigo-600 shadow px-4 text-lg rounded-md w-full text-white my-3">Cập nhật</button>
@@ -91,28 +84,13 @@
         </section>
     </div>
     <script>
-        const formChangePassword = document.querySelector('form[name="formChangePassword"]');
-        const inputCurrentPassword = document.querySelector('input[name="currentPassword"]');
-        const inputNewPassword = document.querySelector('input[name="newPassword"]');
-        const inputConfirmPassword = document.querySelector('input[name="confirmPassword"]');
+        const formProfileImage = document.querySelector('form[name="formProfileImage"]');
+        const inputProfileImage = document.querySelector('input[name="image"]');
     
-        formChangePassword.addEventListener('submit', e => {
-            if (!inputCurrentPassword.value.trim() || inputCurrentPassword.value.length < 8) {
+        formProfileImage.addEventListener('submit', e => {
+            if (inputProfileImage.files.length === 0) {
                 e.preventDefault();
-                alert('Mật khẩu hiện tại có ít nhất 8 ký tự!');
-            }
-            else if (!inputNewPassword.value.trim() || inputNewPassword.value.length < 8) {
-                e.preventDefault();
-                alert('Mật khẩu mới có ít nhất 8 ký tự');
-            }
-            else if (!inputConfirmPassword.value.trim() || inputConfirmPassword.value.length < 8) {
-                e.preventDefault();
-                alert('Xác nhận mật khẩu có ít nhất 8 ký tự');
-            } 
-    
-            if (inputNewPassword.value !== inputConfirmPassword.value) {
-                e.preventDefault();
-                alert('Mật khẩu mới và xác nhận mật khẩu mới phải trùng nhau');
+                alert('Vui lòng chọn 01 hình ảnh!');
             }
         })
     </script>
