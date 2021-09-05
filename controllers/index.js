@@ -5,8 +5,22 @@ function escapeRegExp(string) {
   }
   
 module.exports = {
-    getIndex(req, res, next) {
-        res.render('home/index');
+    async getIndex(req, res, next) {
+        try {
+            const productsPaginate = await Product.paginate({}, {
+                sort: { _id: -1 },
+                limit: 5,
+                page: req.query.page || 1,
+                populate: {
+                    path: 'seller'
+                }
+            });
+
+            return res.render('home/index', { productsPaginate });
+        } catch (error) {
+            return res.render('error/index');
+        }
+        
     },
 
     async getShowSearchResult(req, res, next) {

@@ -1,11 +1,27 @@
-<% layout('layouts/boilerplate') -%>
-<h1>This is ERROR PAGE</h1>
-
-<div>
-    <% if (errorMsg) { %>
-        <h1><%= errorMsg %></h1>
-    <% } %>
-    <% if (successMsg) { %>
-        <h1><%= successMsg %></h1>
-    <% } %>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/tailwindbuild.css" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossOrigin="anonymous" />
+    <title>Lỗi - Marketplace</title>
+</head>
+<body class="bg-indigo-50 merriweather">
+   <div class="w-full h-screen flex justify-center flex-col items-center px-5">
+       <div class="py-4">
+           <i class="far fa-search text-5xl px-2 text-gray-500"></i>
+           <i class="fal fa-file-times text-5xl px-2 text-gray-500"></i>
+        </div>
+       <div class="py-4 text-gray-500">Không tìm thấy nội dung bạn yêu cầu</div>
+       <div class="py-4">
+           <a href="/" class="flex flex-wrap items-center justify-center text-indigo-700 bg-indigo-200 shadow-md inline-block px-12 py-4 rounded-lg transition-all duration-300 hover:shadow-sm">
+                <i class="far fa-external-link-alt mr-2 my-2"></i>
+                <span>Quay về trang chủ</span>
+           </a>
+       </div>
+   </div>
+</body>
+</html>
