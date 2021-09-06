@@ -23,6 +23,10 @@ const UserSchema = new Schema({
     verificationExpires: Date,
     resetPasswordToken: String, 
     resetPasswordExpires: Date,
+    isGoogle: {
+        type: Number,
+        default: 0,
+    }
 });
 
 UserSchema.plugin(passportLocalMongoose);

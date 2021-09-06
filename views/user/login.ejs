@@ -16,6 +16,10 @@
                     <span><%= successMsg %></span>
                 </div>
             <% } %>
+            <div class="hidden loginWithGoogle mb-5 bg-red-100 text-red-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-red-500 border-t-0 border-r-0 border-l-0">
+                <i class="fad fa-exclamation-triangle text-2xl"></i>
+                <span>Có lỗi xảy ra khi đăng nhập bằng tài khoản Google</span>
+            </div>
             <div>
                 <form action="/user/login<%- _continue !== null ? '?_continue=' : '' %><%- _continue !== null ? _continue : '' %>" method="POST" enctype="multipart/form-data" class="w-full">
                     <div class="relative mb-5">
@@ -40,10 +44,40 @@
                         <a href="/user/register" class="inline-block text-center border border-indigo-500 bg-white text-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-500 hover:text-white shadow-sm px-4 text-lg rounded-md w-full">Đăng ký</a>
                     </div>
                 </div>
+                <form>
+                    <div>
+                        <div class="g-signin2 googleLogin" data-onsuccess="onSignIn"></div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    
+    function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        const id_token = googleUser.getAuthResponse().id_token;
+
+        gapi.auth2.getAuthInstance().disconnect().then(function(){});
+
+        fetch(`/user/login/google/${id_token}`,{
+            method: 'POST',
+            cache: 'no-cache',
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            if (data.ok) {
+                window.location.assign(data.redirect || '/');
+            } else {
+                document.querySelector('.loginWithGoogle').classList.remove('loginWithGoogle');
+            }
+        })
+    }
+</script>
 <script>
     const usernameInput = document.querySelector('input[name="username"]');
     const usernameLabel = document.querySelector('label.username-label');

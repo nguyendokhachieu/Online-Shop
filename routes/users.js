@@ -16,12 +16,15 @@ const {
   getShowUserProfile,
   patchChangeUserProfileImage,
   patchChangeUserPassword,
+  postLoginWithGoogle,
 } = require('../controllers/user');
 const {
   isLoggedIn,
   isMyself,
 } = require('../middlewares');
 // GIỮ LẠI GIÁ TRỊ CHO CÁC Ô INPUT
+
+router.post('/login/google/:id_token', postLoginWithGoogle);
 
 router.get('/login', getLogin);
 router.post('/login', upload.none(), postLogin);

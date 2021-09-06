@@ -2,6 +2,9 @@ const { cloudinary, sgMail, hideEmail } = require('../helpers');
 const crypto = require('crypto');
 const User = require('../models/user');
 const Product = require('../models/product');
+const { OAuth2Client } = require('google-auth-library');
+const { findById } = require('../models/user');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 module.exports = {
     getLogin(req, res, next) {
@@ -384,6 +387,104 @@ module.exports = {
         } catch (error) {
             req.session.errorMsg = 'Có lỗi xảy ra!';
             return res.redirect(`/user/profile/${req.user.username}`);
+        }
+    },
+
+    async postLoginWithGoogle(req, res, next) {
+        try {
+            async function verify() {
+                const ticket = await client.verifyIdToken({
+                    idToken: req.params.id_token,
+                    audience: process.env.GOOGLE_CLIENT_ID,
+                });
+
+                const payload = ticket.getPayload();
+
+                const findUser = await User.findOne({
+                    email: payload.email,
+                });
+
+                const _continue = req.query._continue || null;
+
+                if (!findUser) {
+                    const newUser = new User({
+                        email: payload.email,
+                        username: payload.email.split('@')[0],
+                        fullname: payload.name,
+                        isMail: 1,
+                        image: {
+                            secure_url: payload.picture,
+                            public_id: '',
+                        },
+                        isGoogle: 1,
+                    });
+        
+                    await User.register(newUser, process.env.GOOGLE_LOGIN_DEFAULT_PASSWORD);
+
+                    const { user, error } = await User.authenticate()(newUser.username, process.env.GOOGLE_LOGIN_DEFAULT_PASSWORD);
+
+                    if (!error) {
+                        req.login(user, function(err) {
+                            if (err) {
+                                return res.json({
+                                    ok: false,
+                                    error: err.message
+                                });
+                            }    
+
+                            return res.json({
+                                ok: true,
+                                redirect: _continue,
+                            });
+                        })
+                    } else {
+                        return res.json({
+                            ok: false,
+                            error: error.message
+                        });
+                    }
+
+                } else {
+                    const { user, error } = await User.authenticate()(findUser.username, process.env.GOOGLE_LOGIN_DEFAULT_PASSWORD);
+                
+                    if (error) {
+                        return res.json({
+                            ok: false,
+                            error: error.message
+                        });
+                    } else {
+                        req.login(user, function(err) {
+                            if (err) {
+                                return res.json({
+                                    ok: false,
+                                    error: err.message
+                                });
+                            }
+            
+                            return res.json({
+                                ok: true,
+                                redirect: _continue,
+                            });
+                        })
+                    }
+                    
+                }
+            }
+            
+            if (req.params.id_token) {
+                verify().catch();
+            } else {
+                return res.json({
+                    ok: false,
+                    error: err.message
+                });
+            }
+
+        } catch (error) {
+            return res.json({
+                ok: false,
+                error: err.message
+            });
         }
     }
 
