@@ -1,0 +1,60 @@
+<% layout('layouts/boilerplate') -%>
+
+<div class="container mx-auto md:px-20 px-10 mt-32">
+    <div class="shadow p-5 rounded-md bg-white mb-4 mt-1">
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold inline"><i class="far fa-plus-square mr-2 text-lg text-indigo-600 font-light"></i><span class="underline-shadow">Tải hình ảnh lên cho <span class="italic"><%= product_title %></span></span></h2>
+        </div>
+        <div>
+            <form action="/products/create_new/product_images/<%= product_id %>" method="POST" enctype="multipart/form-data" name="createNew">
+                <div>
+                    <label for="images" class="text-md text-indigo-500">Hình ảnh sản phẩm</label>
+                </div> 
+                <div class="pb-5 pt-2">
+                    <label class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500 inline-block cursor-pointer">
+                        <i class="fad fa-file-upload mr-2 text-blue-500 text-lg"></i>
+                        Tải hình ảnh lên (tối đa 4 hình ảnh)
+                        <input type="file" id="images" name="images" multiple hidden accept="image/*" />
+                    </label>
+                    <div class="pt-2">
+                        <label class="text-md text-indigo-500 new-img-upload-count">Đã chọn 0 hình ảnh</label>
+                    </div>
+                    <div class="pt-2 imgs-preview flex justify-start items-center flex-wrap"></div>
+                    <script>
+                        const newImgCount = document.querySelector('.new-img-upload-count');
+                        const imgUpload = document.querySelector('input[name="images"]');
+                        const imgsPreview = document.querySelector('.imgs-preview');
+
+                        imgUpload.addEventListener('change', evt => {
+                            const files = imgUpload.files;
+                            const filesLen = files.length || 0;
+
+                            newImgCount.textContent = `Đã chọn ${filesLen} hình ảnh`;
+
+                            if (files && files.length) {
+                                for (const imgItem of files) {
+                                    let imgTag = document.createElement('img');
+                                    imgTag.src = URL.createObjectURL(imgItem);
+                                    imgTag.alt = 'image preview';
+                                    imgTag.width = '100';
+                                    imgTag.height = '100';
+                                    imgTag.classList.add('mr-2');
+                                    imgsPreview.appendChild(imgTag);
+                                }
+                            }
+                        })
+                    </script>
+                </div>
+                <div class="py-5">
+                    <button type="submit" class="mt-2 outline-none px-3 py-2 border bg-green-600 transition-all duration-200 hover:bg-green-500 shadow rounded w-full text-lg text-white ">Thêm hình ảnh</button>
+                </div>
+            </form>
+            <div class="border-t border-gray-200">
+                <h3 class="text-gray-500 py-2">Hình ảnh giúp người xem dễ dàng xem xét sản phẩm của bạn, nếu chưa có hình, bạn có thể bỏ qua và thêm hình ảnh sau</h3>
+            </div>
+            <div>
+                <a class="inline-block text-center hover:shadow-sm transition-all duration-200 mt-2 outline-none px-3 py-2 border bg-white shadow rounded w-full text-lg text-green-600 " href="/products/<%= product_id %>">Bỏ qua và thêm hình ảnh sau</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -40,15 +40,6 @@ module.exports = {
                 return res.redirect('/products/create_new');
             }
 
-            if (req.files && req.files.length) {
-                for (const file of req.files) {
-                    if (!file.mimetype.startsWith('image')) {
-                        req.session.errorMsg = 'Có vẻ như tập tin tải lên không phải là hình ảnh, vui lòng kiểm tra lại!';
-                        return res.redirect('/products/create_new');
-                    }
-                }
-            }
-
             const title = striptags(req.body.title.trim());
             const price = Number(req.body.price);
             const description = striptags(req.body.description.trim(), [
@@ -75,7 +66,34 @@ module.exports = {
                 images: [],
             };
             
+            const newProduct = await Product.create(product);
+
+            req.session.successMsg = 'Cập nhật hình ảnh cho sản phẩm. Lưu ý: tối đa 4 hình ảnh được cho phép trên 01 sản phẩm!';
+            res.render('product/createNewUploadImages', { product_id: newProduct._id, product_title: newProduct.title });
+
+        } catch (error) {
+            req.session.errorMsg = 'Có lỗi xảy ra trong quá trình đăng sản phẩm, xin vui lòng thử lại!';
+            return res.redirect('/products/create_new');
+        } 
+    },
+
+    async postCreateNewProductImages(req, res, next) {
+        try {
+            const product = await Product.findById(req.params.product_id);
+
+            if (!product) {
+                req.session.errorMsg = 'Có lỗi xảy ra trong quá trình cập nhật hình ảnh sản phẩm, bạn có thể chỉnh sửa sản phẩm để thêm hình ảnh!';
+                return res.redirect('/products');
+            }
+
             if (req.files && req.files.length) {
+                for (const file of req.files) {
+                    if (!file.mimetype.startsWith('image')) {
+                        req.session.errorMsg = 'Có vẻ như tập tin tải lên không phải là hình ảnh, bạn có thể chỉnh sửa sản phẩm để thêm hình ảnh!';
+                        return res.redirect(`/products/${req.params.product_id}`);
+                    }
+                }
+
                 for (const img of req.files) {
                     const uploaded = await cloudinary.uploader.upload(img.path);
                     
@@ -84,17 +102,16 @@ module.exports = {
                         public_id: uploaded.public_id,
                     });
                 }
+
+                await product.save();
+
+                req.session.successMsg = 'Thêm sản phẩm thành công!';
+                return res.redirect(`/products/${req.params.product_id}`);
             }
-            
-            const newProduct = await Product.create(product);
-
-            req.session.successMsg = 'Đăng sản phẩm mới thành công!';
-            res.redirect(`/products/${newProduct.id}`);
-
         } catch (error) {
-            req.session.errorMsg = 'Có vẻ như có lỗi xảy ra trong quá trình đăng sản phẩm, xin vui lòng thử lại';
-            return res.redirect('/products/create_new');
-        } 
+            req.session.errorMsg = 'Rất tiếc, đã có lỗi xảy ra, bạn có thể chỉnh sửa sản phẩm để thêm hình ảnh!';
+            return res.redirect(`/products/${req.params.product_id}`);            
+        }
     },
 
     async getShowSingleProduct(req, res, next) {

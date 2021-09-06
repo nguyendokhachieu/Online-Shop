@@ -11,6 +11,7 @@ const {
     deleteSingleProduct,
     getShowProductsPaginate,
     deleteManyPosts,
+    postCreateNewProductImages,
 } = require('../controllers/product');
 const {
     postCreateNewReview,
@@ -24,8 +25,9 @@ const {
     isAllProductsMine,
 } = require('../middlewares');
 
+router.post('/create_new/product_images/:product_id', upload.array('images', 4), isLoggedIn, isProductSeller, postCreateNewProductImages);
 router.get('/create_new', isLoggedIn, getCreateNewProduct);
-router.post('/create_new', upload.array('images', 4), isLoggedIn, postCreateNewProduct);
+router.post('/create_new', upload.none(), isLoggedIn, postCreateNewProduct);
 
 router.delete('/delete_many', upload.none(), isLoggedIn, isAllProductsMine, deleteManyPosts);
 
