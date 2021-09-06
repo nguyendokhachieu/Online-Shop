@@ -100,5 +100,29 @@ module.exports = {
                 errorMsg: 'You can only review this product one time!'
             })
         }
+    },
+
+    async isGoogleAccountSoStopTheChain(req, res, next) {
+        try {
+            const user = await User.findOne({
+                email: req.body.email
+            });
+
+            if (!user) {
+                req.session.errorMsg = 'Chúng tôi chưa thể tìm được người dùng ứng với email bạn đã điền, xin vui lòng kiểm tra lại!';
+                return res.redirect('/user/forgot_password');
+            }
+
+            if (user.isGoogle === 1) {
+                req.session.errorMsg = 'Rất tiếc, hiện chức năng quên mật khẩu chưa dành cho tài khoản của bạn! Lý do: tài khoản đăng nhập bởi Google';
+                return res.redirect('/user/forgot_password');
+            } else {
+                return next();
+            }
+
+        } catch (error) {
+            req.session.errorMsg = 'Có lỗi xảy ra, xin vui lòng thử lại!';
+            return res.redirect('/user/forgot_password');
+        }
     }
 }

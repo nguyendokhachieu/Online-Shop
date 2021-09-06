@@ -326,7 +326,9 @@ module.exports = {
                 }
 
                 if (!user.image.secure_url.includes('/images/default-avatar.png')) {
-                    await cloudinary.uploader.destroy(user.image.public_id);
+                    if (user.image.public_id) {
+                        await cloudinary.uploader.destroy(user.image.public_id);
+                    }
                 }
 
                 const uploaded = await cloudinary.uploader.upload(req.file.path);
@@ -370,6 +372,11 @@ module.exports = {
             if (!user || error) {
                 req.session.errorMsg = 'Mật khẩu không hợp lệ! Xin vui lòng thử lại';
                 return res.redirect(`/dashboard/change_password`);
+            }
+
+            if (user.isGoogle === 1) {
+                req.session.errorMsg = 'Rất tiếc, hiện chức năng quên mật khẩu chưa dành cho tài khoản của bạn! Lý do: tài khoản đăng nhập bởi Google';
+                return res.redirect('/');
             }
 
             await user.setPassword(req.body.newPassword);

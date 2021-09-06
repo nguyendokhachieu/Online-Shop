@@ -21,6 +21,7 @@ const {
 const {
   isLoggedIn,
   isMyself,
+  isGoogleAccountSoStopTheChain,
 } = require('../middlewares');
 // GIỮ LẠI GIÁ TRỊ CHO CÁC Ô INPUT
 
@@ -37,7 +38,7 @@ router.post('/register', upload.single('image'), postRegister);
 router.get('/verification/:user_id/:verification_token', getUserVerification);
 
 router.get('/forgot_password', getForgotPassword);
-router.put('/forgot_password', upload.none(), putForgotPassword);
+router.put('/forgot_password', upload.none(), isGoogleAccountSoStopTheChain, putForgotPassword);
 router.get('/reset_password/:reset_password_token', getResetPassword);
 router.put('/password_recovery/:reset_password_token', upload.none(), putPasswordRecovery);
 

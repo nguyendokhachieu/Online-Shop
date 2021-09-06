@@ -21,9 +21,29 @@
                 <span>Có lỗi xảy ra khi đăng nhập bằng tài khoản Google</span>
             </div>
             <div>
+                <div class="mb-3 text-center">
+                    <span class="text-gray-400">Đăng nhập nhanh hơn với Google</spanhref=>
+                </div>
+                <div class="mb-4">
+                    <style>
+                        .googleLogin * {
+                            width: 100% !important;
+                            box-shadow: unset !important;
+                            opacity: 0;
+                        }
+                    </style>
+                    <div class="py-4 relative bg-green-400 rounded flex justify-center items-center shadow">
+                        <div><img src="/images/google_logo_G.png" width="20px" height="20px" style="object-fit: cover;" /></div>
+                        <div class="px-3 text-white text-lg">Đăng nhập với Google</div>
+                        <div class="g-signin2 googleLogin absolute top-0 left-0 w-full h-full" data-onsuccess="onSignIn"></div>
+                    </div>
+                </div>
+                <div class="my-5 pt-4 text-center border-gray-300 border-t">
+                    <span class="text-gray-400">Hoặc đăng nhập bằng username và password</span>
+                </div>
                 <form action="/user/login<%- _continue !== null ? '?_continue=' : '' %><%- _continue !== null ? _continue : '' %>" method="POST" enctype="multipart/form-data" class="w-full">
                     <div class="relative mb-5">
-                        <input type="text" id="username" name="username" autofocus class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
+                        <input type="text" id="username" name="username" class="w-full outline-none text-lg border border-gray-300 px-4 py-4 rounded-md shadow-sm input-animate" />
                         <label for="username" class="username-label absolute left-6 top-4 transition-all duration-100 text-lg text-gray-500 input-label cursor-text">Username</label>
                     </div>
                     <div class="relative mb-5">
@@ -44,11 +64,6 @@
                         <a href="/user/register" class="inline-block text-center border border-indigo-500 bg-white text-indigo-500 py-3 transition-all duration-200 hover:bg-indigo-500 hover:text-white shadow-sm px-4 text-lg rounded-md w-full">Đăng ký</a>
                     </div>
                 </div>
-                <form>
-                    <div>
-                        <div class="g-signin2 googleLogin" data-onsuccess="onSignIn"></div>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
