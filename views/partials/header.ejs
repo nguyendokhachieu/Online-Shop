@@ -8,10 +8,10 @@
                 <li><a href="/" class="px-4 py-1 rounded hover:bg-indigo-400 transition-all duration-200 home-top-nav"><i class="fas fa-home md:mr-2"></i><span class="md:inline hidden">Trang chủ</span></a></li>
                 <% if (currentUser) { %>
                     <li><a href="/user/profile/<%= currentUser.username %>" class="personal-button px-4 py-1 rounded hover:bg-indigo-400 transition-all duration-200 relative z-10">
-                        <i class="personal-button fas fa-list-alt md:mr-2"></i><span class="personal-button md:inline hidden">@<%= currentUser.username %></span></a>
+                        <i class="personal-button far fa-user md:mr-2"></i><span class="personal-button md:inline hidden">@<%= currentUser.username %></span></a>
                         <div class="absolute top-12 bg-white rounded py-3 shadow personal-button-dropdown hidden">
                             <ul>
-                                <li><a href="/user/profile/<%= currentUser.username %>" class="inline-block w-full px-5 py-2 text-gray-500 hover:bg-gray-100 transition-all duration-200"><i class="fas fa-home mr-2"></i><span>Trang cá nhân</span></a></li>
+                                <li><a href="/user/profile/<%= currentUser.username %>" class="inline-block w-full px-5 py-2 text-gray-500 hover:bg-gray-100 transition-all duration-200"><i class="fal fa-user-circle mr-2"></i><span>Trang cá nhân</span></a></li>
                                 <li><a href="/user/logout" class="inline-block w-full px-5 py-2 text-gray-500 hover:bg-gray-100 transition-all duration-200"><i class="fad fa-sign-out mr-2"></i><span>Đăng xuất</span></a></li>
                             </ul>
                         </div>
@@ -25,7 +25,7 @@
             <input type="search" name="q" class="px-4 py-2 outline-none rounded-md w-full shadow-md" placeholder="Tìm kiếm sản phẩm, địa điểm, giá cả, ...">
             <button type="submit" class="hidden">Tìm kiếm</button>
         </form>
-        <div class="text-right">
+        <div class="text-right py-2">
             <% if (currentUser) { %>
                 <a href="/products/create_new" class="text-white rounded px-5 py-2 transition-all duration-200 bg-yellow-400 bold font-semibold shadow-sm hover:bg-white hover:text-yellow-500"><i class="far fa-plus-square mr-2"></i><span>Sản phẩm mới</span></a>
             <% } else { %>
