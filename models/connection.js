@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 module.exports = {
     async connect(req, res, next) {
         try {
-            await mongoose.connect('mongodb://localhost:27017/online-shop-3', { 
+            await mongoose.connect(process.env.MONGODB_URI, { 
                 useNewUrlParser: true,
                 useCreateIndex: true,
                 useUnifiedTopology: true,

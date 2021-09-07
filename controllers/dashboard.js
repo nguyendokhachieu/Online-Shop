@@ -22,7 +22,7 @@ module.exports = {
         return res.render('dashboard/changePassword');
     },
 
-    async getDashboardAvatarUploadPage(req, res, next) {
+    getDashboardAvatarUploadPage(req, res, next) {
         return res.render('dashboard/avatarUpload');
     }
     
