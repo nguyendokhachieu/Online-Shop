@@ -44,7 +44,7 @@
                     <% productsPaginate.docs.forEach(function(product) { %>
                         <a href="/products/<%= product.id %>" class="inline-block">
                             <div class="flex flex-col items-center justify-center px-2 py-3 border-gray-200 border transform hover:shadow-md transition-all duration-300 rounded-sm">
-                                <img class="w-full h-36 rounded-sm object-cover" src="<%= product.images.length ? product.images[0] : '/images/default-no-image.jpg' %>" alt="category" />
+                                <img class="w-full h-36 rounded-sm object-cover" src="<%= product.images.length ? product.images[0].secure_url : '/images/default-no-image.jpg' %>" alt="category" />
                                 <h4 class="text-left mt-1 mb-1 leading-5"><%= product.title %></h4>
                                 <div class="w-full text-left text-green-800 font-semibold"><%= product.price %> VND</div>
                                 <div class="w-full">
