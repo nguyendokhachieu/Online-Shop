@@ -9,7 +9,7 @@ module.exports = {
         try {
             const productsPaginate = await Product.paginate({}, {
                 sort: { _id: -1 },
-                limit: 5,
+                limit: 20,
                 page: req.query.page || 1,
                 populate: {
                     path: 'seller'

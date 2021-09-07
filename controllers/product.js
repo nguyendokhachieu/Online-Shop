@@ -64,6 +64,7 @@ module.exports = {
                 geoJSON,
                 seller: req.user._id,
                 images: [],
+                createdAt: Date.now()
             };
             
             const newProduct = await Product.create(product);
@@ -299,7 +300,7 @@ module.exports = {
         try {
             const productsPaginate = await Product.paginate({}, {
                 sort: { _id: -1 },
-                limit: 5,
+                limit: 25,
                 page: req.query.page || 1,
                 populate: {
                     path: 'seller'

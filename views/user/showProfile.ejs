@@ -3,7 +3,7 @@
 <section class="registerSuccess-section mt-44 lg:mt-32">
     <div class="container mx-auto md:px-20 px-10 min-h-screen">
         <div class="pb-2">
-            <span class="nunito font-semibold italic text-gray-600">Trang cá nhân của @<%= user.username %></span>
+            <span class="nunito font-semibold italic text-gray-600">Trang cá nhân của <%= user.name || user.username %></span>
         </div>
         <div class="w-full mx-auto rounded-lg shadow-sm py-8 px-5 bg-white">
             <section class="user-info flex justify-between flex-wrap">
@@ -12,14 +12,14 @@
                         <img class="w-32 h-32 rounded-full object-cover" src="<%= user.image.secure_url %>" alt="Ảnh đại diện của @<%= user.username %>" />
                     </div>
                     <div class="px-5">
-                        <h2 class="text-gray-600 text-xl">@<%= user.username %></h2>
+                        <h2 class="text-gray-600 text-xl"><%= user.name || user.username %></h2>
                         <!-- <div class="py-2 text-gray-500">
                             <i class="fad fa-history mr-2"></i>
                             Đã tham gia 6 tháng trước
                         </div> -->
                         <% if (currentUser && currentUser.username === user.username) { %>
-                            <div class="py-3">
-                                <a class="py-2 px-5 text-gray-700 border border-gray-300 rounded-full hover:border-gray-500 transition-all hover:text-gray-800" href="/dashboard/products">Dashboard</a>
+                            <div class="py-5">
+                                <a class="py-2 px-7 text-gray-700 border border-gray-400 rounded-full hover:border-gray-500 transition-all hover:text-gray-800" href="/dashboard/products">Dashboard</a>
                             </div>
                         <% } %>
                     </div>
@@ -42,7 +42,7 @@
         </div>
         <div class="w-full mx-auto rounded-lg shadow-sm py-5 px-5 bg-white mt-5">
             <div class="border-b border-gray-300 pb-3 mb-3">
-                <h3 class="text-xl nunito text-gray-600">Tin đã đăng</h3>
+                <h3 class="text-xl nunito text-gray-600">Sản phẩm đã đăng</h3>
             </div>
             <% if (productsPaginate.docs && productsPaginate.docs.length ) { %>
                 <div class="productsList">
@@ -65,36 +65,38 @@
             <% } else { %>
                 <div class="flex flex-col justify-center items-center py-5">
                     <i class="fad fa-file-search text-6xl text-gray-400"></i>
-                    <span class="py-5 text-gray-500">Bạn chưa đăng tin hay sản phẩm nào!</span>
+                    <span class="py-5 text-gray-500"><%= currentUser && currentUser.username === user.username ? 'Bạn' : 'Người dùng này' %> chưa đăng tin hay sản phẩm nào!</span>
                 </div>
-            <% } %>            
-            <nav class="mt-7">
-                <ul class="flex items-center justify-center">
-                    <% if (productsPaginate.page > 1) { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/user/profile/<%= user.username %>?page=<%= productsPaginate.page - 1 %>">Previous</a></li>
-                    <% } else { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
-                    <% } %>
-        
-                    <% if (productsPaginate.page > 4) { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
-                    <% } %>
-        
-                    <% for(let i = productsPaginate.page <= 3 ? 1 : productsPaginate.page - 3 ; i <= (productsPaginate.page + 3 > productsPaginate.totalPages ? productsPaginate.totalPages : productsPaginate.page + 3); i++) { %>
-                        <li class="<%- productsPaginate.page === i ? 'paginate-item-active' : '' %>"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/user/profile/<%= user.username %>?page=<%= i %>"><%= i %></a></li>
-                    <% } %>
-                    
-                    <% if (productsPaginate.page <= productsPaginate.totalPages - 4) { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
-                    <% } %>
-        
-                    <% if (productsPaginate.page < productsPaginate.totalPages) { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/user/profile/<%= user.username %>?page=<%= productsPaginate.page + 1 %>">Next</a></li>
-                    <% } else { %>
-                        <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
-                    <% } %>
-                </ul>
-            </nav>
+            <% } %>    
+            <% if (productsPaginate.docs && productsPaginate.docs.length) { %>        
+                <nav class="mt-7">
+                    <ul class="flex items-center justify-center">
+                        <% if (productsPaginate.page > 1) { %>
+                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/user/profile/<%= user.username %>?page=<%= productsPaginate.page - 1 %>">Previous</a></li>
+                        <% } else { %>
+                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
+                        <% } %>
+            
+                        <% if (productsPaginate.page > 4) { %>
+                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                        <% } %>
+            
+                        <% for(let i = productsPaginate.page <= 3 ? 1 : productsPaginate.page - 3 ; i <= (productsPaginate.page + 3 > productsPaginate.totalPages ? productsPaginate.totalPages : productsPaginate.page + 3); i++) { %>
+                            <li class="<%- productsPaginate.page === i ? 'paginate-item-active' : '' %>"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/user/profile/<%= user.username %>?page=<%= i %>"><%= i %></a></li>
+                        <% } %>
+                        
+                        <% if (productsPaginate.page <= productsPaginate.totalPages - 4) { %>
+                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">...</a></li>
+                        <% } %>
+            
+                        <% if (productsPaginate.page < productsPaginate.totalPages) { %>
+                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/user/profile/<%= user.username %>?page=<%= productsPaginate.page + 1 %>">Next</a></li>
+                        <% } else { %>
+                            <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
+                        <% } %>
+                    </ul>
+                </nav>
+            <% } %>
         </div>
     </div>
 </section>

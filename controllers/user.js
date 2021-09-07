@@ -295,7 +295,7 @@ module.exports = {
             const productsPaginate = await Product.paginate({
                 seller: user._id
             }, {
-                limit: 5,
+                limit: 25,
                 page: req.query.page || 1, 
                 sort: { _id: -1 },
                 populate: {
@@ -417,7 +417,7 @@ module.exports = {
                     const newUser = new User({
                         email: payload.email,
                         username: payload.email.split('@')[0],
-                        fullname: payload.name,
+                        name: payload.name,
                         isMail: 1,
                         image: {
                             secure_url: payload.picture,

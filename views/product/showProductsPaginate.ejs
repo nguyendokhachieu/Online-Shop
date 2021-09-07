@@ -6,26 +6,33 @@
             <h2 class="text-xl font-semibold inline"><i class="fal fa-list-alt font-light text-indigo-600 mr-2"></i><span class="underline-shadow">Danh sách sản phẩm</span></h2>
         </div>
         <div class="productsList">
-            <div class="grid grid-cols-1 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3">
-                <% productsPaginate.docs.forEach(function(product) { %>
-                    <a href="/products/<%= product._id %>" class="product-item inline-block" title="<%= product.title %>">
-                        <div class="flex flex-col items-center justify-center px-2 py-3 border-gray-200 border transform hover:shadow-md transition-all duration-300 rounded-sm">
-                            <img class="w-full h-36 rounded-sm object-cover" src="<%= product.images.length ? product.images[0].secure_url : '/images/default-no-image.jpg' %>" alt="category" />
-                            <h4 class="text-left mt-1 mb-1 leading-5"><%= product.title %></h4>
-                            <div class="w-full text-left text-green-800 font-semibold"><%= new Intl.NumberFormat().format(product.price) %> VND</div>
-                            <div class="w-full">
-                                <!-- <i class="far fa-clock text-gray-500 font-light text-xs mr-1"></i>
-                                <span class="text-gray-500 font-light text-xs mr-1">6 giờ trước</span> -->
+            <% if (productsPaginate.docs && productsPaginate.docs.length) { %>
+                <div class="grid grid-cols-1 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3">
+                    <% productsPaginate.docs.forEach(function(product) { %>
+                        <a href="/products/<%= product._id %>" class="product-item inline-block" title="<%= product.title %>">
+                            <div class="flex flex-col items-center justify-center px-2 py-3 border-gray-200 border transform hover:shadow-md transition-all duration-300 rounded-sm">
+                                <img class="w-full h-36 rounded-sm object-cover" src="<%= product.images.length ? product.images[0].secure_url : '/images/default-no-image.jpg' %>" alt="category" />
+                                <h4 class="text-left mt-1 mb-1 leading-5"><%= product.title %></h4>
+                                <div class="w-full text-left text-green-800 font-semibold"><%= new Intl.NumberFormat().format(product.price) %> VND</div>
+                                <div class="w-full">
+                                    <i class="far fa-clock text-gray-500 font-light text-xs mr-1"></i>
+                                    <span class="text-gray-500 text-xs mr-1"><%= product.createdAt.getDate() %> thg <%= product.createdAt.getMonth() + 1 %>, <%= product.createdAt.getFullYear() %> lúc <%= product.createdAt.getHours() %>:<%= product.createdAt.getMinutes() %></span>
+                                </div>
                             </div>
-                        </div>
-                    </a>       
-                <% }) %>
-            </div>
+                        </a>       
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="flex flex-col justify-center items-center py-5">
+                    <i class="fad fa-file-search text-6xl text-gray-400"></i>
+                    <span class="py-5 text-gray-500">Trang này không có nội dung!</span>
+                </div>
+            <% } %>
         </div>
         <nav class="pt-5 flex justify-center">
             <ul class="flex justify-start">
                 <% if (productsPaginate.page > 1) { %>
-                    <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= productsPaginate.page - 1 %>">Previous</a></li>
+                    <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= productsPaginate.page - 1 %>">Trang trước</a></li>
                 <% } else { %>
                     <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Previous</a></li>
                 <% } %>
@@ -45,7 +52,7 @@
                 <% if (productsPaginate.page < productsPaginate.totalPages) { %>
                     <li><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="/products?page=<%= productsPaginate.page + 1 %>">Next</a></li>
                 <% } else { %>
-                    <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Next</a></li>
+                    <li class="paginate-item-disabled"><a class="py-2 px-4 rounded-sm hover:bg-indigo-500 hover:text-white transition-all duration-200 border border-indigo-200 text-indigo-900 inline-block" href="#">Trang tiếp</a></li>
                 <% } %>
             </ul>
         </nav>

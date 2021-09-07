@@ -147,6 +147,8 @@
         editor = newEditor;
         editor.model.document.on('change:data', (evt, data) => {
             description.innerHTML = editor.getData();
+            let ckContent = document.querySelector('.ck-content');
+            ckContent.classList.add('ckContent')
         });
     })
     .catch( error => {

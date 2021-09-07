@@ -20,7 +20,7 @@
         <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
     </div>
-    <div class="exploreCategories shadow p-3 rounded-md bg-white my-4">
+    <div class="exploreCategories shadow py-3 px-5 rounded-md bg-white my-4">
         <div class="mb-4">
             <h2 class="text-xl font-semibold underline-shadow inline">Khám phá và danh mục</h2>
         </div>
@@ -34,9 +34,9 @@
             
         </div>
     </div>
-    <div class="productsListWrapper shadow p-3 rounded-md bg-white mb-4">
+    <div class="productsListWrapper shadow py-3 px-5 rounded-md bg-white mb-4">
         <div class="mb-4">
-            <h2 class="text-xl font-semibold underline-shadow inline">Tin mới nhất</h2>
+            <h2 class="text-xl font-semibold underline-shadow inline">Sản phẩm mới nhất</h2>
         </div>
         <div class="productsList">
             <% if (productsPaginate.docs && productsPaginate.docs.length ) { %>
@@ -44,12 +44,12 @@
                     <% productsPaginate.docs.forEach(function(product) { %>
                         <a href="/products/<%= product.id %>" class="inline-block">
                             <div class="flex flex-col items-center justify-center px-2 py-3 border-gray-200 border transform hover:shadow-md transition-all duration-300 rounded-sm">
-                                <img class="w-full h-36 rounded-sm object-cover" src="https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg" alt="category" />
+                                <img class="w-full h-36 rounded-sm object-cover" src="<%= product.images.length ? product.images[0] : '/images/default-no-image.jpg' %>" alt="category" />
                                 <h4 class="text-left mt-1 mb-1 leading-5"><%= product.title %></h4>
                                 <div class="w-full text-left text-green-800 font-semibold"><%= product.price %> VND</div>
                                 <div class="w-full">
                                     <i class="far fa-clock text-gray-500 font-light text-xs mr-1"></i>
-                                    <span class="text-gray-500 font-light text-xs mr-1"><%= product.createdAt.getDate() %>/<%= product.createdAt.getMonth() + 1 %>/<%= product.createdAt.getFullYear() %>, <%= product.createdAt.getHours() %>:<%= product.createdAt.getMinutes() %>:<%= product.createdAt.getSeconds() %></span>
+                                    <span class="text-gray-500 text-xs mr-1"><%= product.createdAt.getDate() %> thg <%= product.createdAt.getMonth() + 1 %>, <%= product.createdAt.getFullYear() %> lúc <%= product.createdAt.getHours() %>:<%= product.createdAt.getMinutes() %></span>
                                 </div>
                             </div>
                         </a>    
@@ -58,10 +58,10 @@
             <% } %>
         </div>
         <div class="flex justify-center mt-5">
-            <a href="/products" class="py-2 px-4 inline-block bg-green-100 text-green-600 rounded transition-all duration-300 hover:bg-green-200 shadow hover:shadow-sm">Xem nhiều hơn</a>
+            <a href="/products?page=1" class="py-2 px-6 inline-block bg-green-500 text-white rounded transition-all duration-300 hover:bg-green-600 shadow hover:shadow-sm">Xem nhiều hơn</a>
         </div>
     </div>
-    <div class="quickIntro shadow p-3 rounded-md bg-white mb-4">
+    <div class="quickIntro shadow py-3 px-5 rounded-md bg-white mb-4">
         <div class="mb-4">
             <h2 class="text-xl font-semibold underline-shadow inline">Marketplace - Trung gian mua sắm của bạn</h2>
         </div>

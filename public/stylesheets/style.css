@@ -29,7 +29,11 @@
   }
 }
 
-
+/* HEADER CSS */
+.text-yellow-custom-hover:hover {
+  color: #f1ef63;
+}
+/* END OF HEADER CSS */
 
 .underline-shadow {
   box-shadow: inset 0 -0.125em 0 0 #fff,
@@ -310,3 +314,72 @@ body.modal-active {
   color: #fff;
 }
 /* ==================== END OF DASHBOARD ==================== */
+
+/* ==================== CKEDITOR CSS OVERWRITE ==================== */
+.ckContent ul {
+  list-style: inside square;
+}
+.ckContent ol {
+  list-style: inside decimal;
+}
+
+.ckContent a {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ckContent h2 {
+  font-size: 18px;
+}
+
+.ckContent h3 {
+  font-size: 15px;
+}
+
+.ckContent h4 {
+  font-size: 11px;
+}
+
+.prodDescriptions > * {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.prodDescriptions ul {
+  list-style: inside square;
+}
+.prodDescriptions ol {
+  list-style: inside decimal;
+}
+
+.prodDescriptions a {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.prodDescriptions h2 {
+  font-size: 18px;
+}
+
+.prodDescriptions h3 {
+  font-size: 15px;
+}
+
+.prodDescriptions h4 {
+  font-size: 11px;
+}
+
+.prodDescriptions table tbody tr td {
+  border: 1px solid #999;
+  padding: 10px 25px;
+}
+
+.prodDescriptions figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==================== END OF CKEDITOR CSS OVERWRITE ==================== */

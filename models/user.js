@@ -19,6 +19,9 @@ const UserSchema = new Schema({
         type: Number,
         default: 0,
     },
+    name: {
+        type: String
+    },
     verificationToken: String,
     verificationExpires: Date,
     resetPasswordToken: String, 

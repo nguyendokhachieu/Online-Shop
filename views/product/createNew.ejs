@@ -5,6 +5,18 @@
         <div class="mb-4">
             <h2 class="text-xl font-semibold inline"><i class="far fa-plus-square mr-2 text-lg text-indigo-600 font-light"></i><span class="underline-shadow">Đăng sản phẩm mới</span></h2>
         </div>
+        <% if (errorMsg) { %>
+            <div class="mb-5 bg-red-100 text-red-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-red-500 border-t-0 border-r-0 border-l-0">
+                <i class="fad fa-exclamation-triangle text-2xl"></i>
+                <span><%= errorMsg %></span>
+            </div>
+        <% } %>
+        <% if (successMsg) { %>
+            <div class="mb-5 bg-green-100 text-green-500 flex flex-col justify-start items-center py-3 px-4 rounded-md border border-b-2 border-green-500 border-t-0 border-r-0 border-l-0">
+                <i class="fad fa-check-circle text-2xl"></i>
+                <span><%= successMsg %></span>
+            </div>
+        <% } %>
         <div>
             <form action="/products/create_new" method="POST" enctype="multipart/form-data" name="createNew">
                 <div>
@@ -50,44 +62,6 @@
                         <option data-uid="0" value="0">Chọn xã / phường / thị trấn</option>
                     </select>
                 </div>   
-                <!-- <div>
-                    <label for="images" class="text-md text-indigo-500">Hình ảnh sản phẩm</label>
-                </div> 
-                <div class="pb-5 pt-2">
-                    <label class="outline-none px-4 py-3 border border-indigo-300 rounded w-full text-lg text-gray-500 inline-block cursor-pointer">
-                        <i class="fad fa-file-upload mr-2 text-blue-500 text-lg"></i>
-                        Tải hình ảnh lên (tối đa 4 hình ảnh)
-                        <input type="file" id="images" name="images" multiple hidden accept="image/*" />
-                    </label>
-                    <div class="pt-2">
-                        <label class="text-md text-indigo-500 new-img-upload-count">Đã chọn 0 hình ảnh</label>
-                    </div>
-                    <div class="pt-2 imgs-preview flex justify-start items-center flex-wrap"></div>
-                    <script>
-                        const newImgCount = document.querySelector('.new-img-upload-count');
-                        const imgUpload = document.querySelector('input[name="images"]');
-                        const imgsPreview = document.querySelector('.imgs-preview');
-
-                        imgUpload.addEventListener('change', evt => {
-                            const files = imgUpload.files;
-                            const filesLen = files.length || 0;
-
-                            newImgCount.textContent = `Đã chọn ${filesLen} hình ảnh`;
-
-                            if (files && files.length) {
-                                for (const imgItem of files) {
-                                    let imgTag = document.createElement('img');
-                                    imgTag.src = URL.createObjectURL(imgItem);
-                                    imgTag.alt = 'image preview';
-                                    imgTag.width = '100';
-                                    imgTag.height = '100';
-                                    imgTag.classList.add('mr-2');
-                                    imgsPreview.appendChild(imgTag);
-                                }
-                            }
-                        })
-                    </script>
-                </div> -->
                 <div class="py-5">
                     <button type="submit" class="mt-2 outline-none px-3 py-2 border bg-green-600 transition-all duration-200 hover:bg-green-500 shadow rounded w-full text-lg text-white ">Đăng sản phẩm</button>
                 </div>
@@ -107,12 +81,14 @@
         editor = newEditor;
         editor.model.document.on('change:data', (evt, data) => {
             description.innerHTML = editor.getData();
+            let ckContent = document.querySelector('.ck-content');
+            ckContent.classList.add('ckContent')
         });
+        
     })
     .catch( error => {
     });
 </script>
-
 <script>
     const provinceSelect = document.querySelector('select[name="province"]');
     const districtSelect = document.querySelector('select[name="district"]');
@@ -173,6 +149,29 @@
                     }
                 }
             })
+        }
+    })
+</script>
+<script>
+    const formCreateNew = document.querySelector('form[name="createNew"]');
+    formCreateNew.addEventListener('submit', e => {
+        const titleValue = document.querySelector('input[name="title"]').value;
+        const provinceValue = document.querySelector('select[name="province"]').value;
+        const districtValue = document.querySelector('select[name="district"]').value;
+        const wardValue = document.querySelector('select[name="ward"]').value;
+
+        if (!titleValue.trim().length) {
+            e.preventDefault();
+            alert('Tên sản phẩm không được rỗng!');
+        } else if (Number(provinceValue) === 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn tỉnh / thành phố!');
+        } else if (Number(districtValue) === 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn quận / huyện / thị xã!');
+        } else if (Number(wardValue) === 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn xã / phường / thị trấn!');
         }
     })
 </script>
